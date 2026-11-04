@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '19 10 * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - 'sources.json'
+      - 'job_watcher.py'
+      - '.github/workflows/daily.yml'
 permissions:
   contents: write
   issues: write
