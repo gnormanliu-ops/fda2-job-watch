@@ -13,8 +13,11 @@
     "name": "GE Aerospace",
     "employer": "GE Aerospace",
     "ticker": "GE",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "geaerospace.wd5.myworkdayjobs.com",
+    "tenant": "geaerospace",
+    "site": "GE_ExternalSite"
   },
   {
     "name": "GE Vernova",
@@ -90,22 +93,31 @@
     "name": "Pfizer",
     "employer": "Pfizer",
     "ticker": "PFE",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "pfizer.wd1.myworkdayjobs.com",
+    "tenant": "pfizer",
+    "site": "PfizerCareers"
   },
   {
     "name": "Eli Lilly",
     "employer": "Eli Lilly",
     "ticker": "LLY",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "lilly.wd115.myworkdayjobs.com",
+    "tenant": "lilly",
+    "site": "LLY"
   },
   {
     "name": "Bristol Myers Squibb",
     "employer": "Bristol Myers Squibb",
     "ticker": "BMY",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "bristolmyerssquibb.wd5.myworkdayjobs.com",
+    "tenant": "bristolmyerssquibb",
+    "site": "BMS"
   },
   {
     "name": "Gilead Sciences",
@@ -163,8 +175,11 @@
     "name": "UPS",
     "employer": "UPS",
     "ticker": "UPS",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "hcmportal.wd5.myworkdayjobs.com",
+    "tenant": "hcmportal",
+    "site": "search"
   },
   {
     "name": "Target",
@@ -184,8 +199,12 @@
     "name": "CVS Health",
     "employer": "CVS Health",
     "ticker": "CVS",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "cvshealth.wd1.myworkdayjobs.com",
+    "tenant": "cvshealth",
+    "site": "CVS_Health_Careers",
+    "search_term": "analyst"
   },
   {
     "name": "Capital One",
@@ -201,7 +220,10 @@
     "name": "Mastercard",
     "employer": "Mastercard",
     "ticker": "MA",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "mastercard.wd1.myworkdayjobs.com",
+    "tenant": "mastercard",
+    "site": "CorporateCareers"
   }
 ]
