@@ -11,27 +11,71 @@ on:
 permissions:
   contents: write
   issues: write
+concurrency:
+  group: daily-job-watch-main
+  cancel-in-progress: false
 jobs:
   collect:
     runs-on: ubuntu-latest
-    concurrency:
-      group: daily-job-watch
-      cancel-in-progress: false
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: python -m pytest -q
-      - run: python job_watcher.py run
-      - name: Commit daily data
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Collect sources and rebuild data
+        run: |
+          python job_watcher.py run 2>&1 | tee collect.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s = json.loads(Path('data/status.json').read_text())
+          ok = [x for x in s['sources'] if x['ok']]
+          print(f"Working sources: {len(ok)}/{len(s['sources'])}, open postings: {s['open']}")
+          for x in s['sources']:
+              print(f"{x['name']}: {'OK' if x['ok'] else 'FAILED'} ({x['count']}) {x.get('error', '')}")
+          if not ok:
+              raise SystemExit('No source returned valid JSON; refusing to publish an empty collection as success.')
+          PY
+      - name: Commit daily data with remote update handling
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/raw data/history.csv data/status.json
-          git diff --cached --quiet || (git commit -m "Daily job snapshot $(date -u +%F)" && git push)
-      - name: Publish daily Issue
+          if git diff --cached --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "Daily job snapshot $(date -u +%F)"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "::error::Data commit conflicts with a newer change; no force push performed."
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              echo "Push race detected, retrying ($attempt/3)"
+              sleep 5
+            done
+            exit 1
+          fi
+      - name: Publish or update daily issue
         env:
           GH_TOKEN: ${{ github.token }}
         run: python issue_report.py
+      - name: Upload collector diagnostic log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: collector-log-${{ github.run_id }}
+          path: |
+            collect.log
+            data/status.json
+          if-no-files-found: ignore
