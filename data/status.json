@@ -1,8 +1,8 @@
 {
-  "run_time": "2026-11-04T02:19:53.708663Z",
+  "run_time": "2026-11-04T02:34:19.587940Z",
   "first_run_date": "2026-11-04",
   "days_with_success": 1,
-  "open": 7362,
+  "open": 6121,
   "new_today": 0,
   "removed_today": 0,
   "sources": [
@@ -13,14 +13,14 @@
     },
     {
       "name": "GE Aerospace",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 657
     },
     {
       "name": "GE Vernova",
-      "ok": true,
-      "count": 2217
+      "ok": false,
+      "count": 0,
+      "error": "Expecting value: line 1 column 1 (char 0)"
     },
     {
       "name": "General Motors",
@@ -54,21 +54,18 @@
     },
     {
       "name": "Pfizer",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Eli Lilly",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Bristol Myers Squibb",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Gilead Sciences",
@@ -114,9 +111,8 @@
     },
     {
       "name": "UPS",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Target",
@@ -132,9 +128,8 @@
     },
     {
       "name": "CVS Health",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 119
     },
     {
       "name": "Capital One",
@@ -143,9 +138,8 @@
     },
     {
       "name": "Mastercard",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
+      "ok": true,
+      "count": 40
     }
   ]
 }
