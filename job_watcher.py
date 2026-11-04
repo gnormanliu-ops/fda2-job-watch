@@ -6,7 +6,7 @@ import requests
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/'data'
 COLS='posting_id source source_id employer title location department posted_date url in_role first_run first_seen last_seen status removed_date'.split()
-ROLE=re.compile(r'\\b(financial?\\s+(?:planning|analyst|analytics|data)|fp\\s*&\\s*a|finance\\s+(?:analyst|manager|associate)|cost\\s+analyst|business\\s+analyst|data\\s+analyst|risk\\s+analyst|investment\\s+analyst|operations?\\s+analyst|treasury\\s+analyst|controller)\\b',re.I)
+ROLE=re.compile(r'\b(financial?\s+(?:planning|analyst|analytics|data)|fp\s*&\s*a|finance\s+(?:analyst|manager|associate)|cost\s+analyst|business\s+analyst|data\s+analyst|risk\s+analyst|investment\s+analyst|operations?\s+analyst|treasury\s+analyst|controller)\b',re.I)
 def in_role(t):return bool(ROLE.search(t or ''))
 def slug(t):return re.sub('[^a-z0-9]+','-',t.lower()).strip('-')
 def sources():return json.loads((ROOT/'sources.json').read_text())
@@ -47,13 +47,13 @@ def normalize(s,raw):
         ident=str(p.get('id') or ext)
         if not ident:continue
         posted=str(p.get('postedOn') or '')
-        result.append(dict(posting_id=slug(s['name'])+':'+ident,source=slug(s['name']),source_id=ident,employer=s['employer'],title=p.get('title') or '',location=p.get('locationsText') or p.get('location') or '',department=p.get('department') or '',posted_date=posted if re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',posted) else '',url='https://'+s['host']+'/'+s['site']+ext if ext.startswith('/') else '',in_role=str(in_role(p.get('title'))).lower()))
+        result.append(dict(posting_id=slug(s['name'])+':'+ident,source=slug(s['name']),source_id=ident,employer=s['employer'],title=p.get('title') or '',location=p.get('locationsText') or p.get('location') or '',department=p.get('department') or '',posted_date=posted if re.fullmatch(r'\d{4}-\d{2}-\d{2}',posted) else '',url='https://'+s['host']+'/'+s['site']+ext if ext.startswith('/') else '',in_role=str(in_role(p.get('title'))).lower()))
     return result
 def build():
     DATA.mkdir(exist_ok=True);by_source={slug(s['name']):s for s in sources()};history={};first={};dates=set()
     for path in sorted((DATA/'raw').glob('*/*.json.gz')):
         day=path.parent.name;key=path.name.removesuffix('.json.gz')
-        if key not in by_source or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',day):continue
+        if key not in by_source or not re.fullmatch(r'\d{4}-\d{2}-\d{2}',day):continue
         with gzip.open(path,'rt',encoding='utf8') as f:raw=json.load(f)
         dates.add(day);first.setdefault(key,day);seen=set()
         for row in normalize(by_source[key],raw):
@@ -76,6 +76,6 @@ def main():
     if a.command=='run':results=collect(today)
     rows,days=build()
     stat=dict(run_time=now.isoformat().replace('+00:00','Z'),first_run_date=days[0] if days else '',days_with_success=len(days),open=sum(r['status']=='open' for r in rows),new_today=sum(r['first_seen']==today and r['first_run']=='false' for r in rows),removed_today=sum(r['removed_date']==today for r in rows),sources=results)
-    (DATA/'status.json').write_text(json.dumps(stat,indent=2)+'\\n')
+    (DATA/'status.json').write_text(json.dumps(stat,indent=2)+'\n')
     print('Snapshots:',len(days),'open:',stat['open'],'working sources:',sum(s['ok'] for s in results))
 if __name__=='__main__':main()
