@@ -8,7 +8,7 @@ function utcNextSchedule(now=new Date()){
 }
 function fmtTime(x,zone){
   if(!x||!Number.isFinite(new Date(x).getTime()))return 'No successful report yet';
-  return new Intl.DateTimeFormat('en-US',{timeZone:zone,dateStyle:'medium',timeStyle:'short',timeZoneName:'short'}).format(new Date(x));
+  return new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(new Date(x));
 }
 function sourceHealth(s){
   if(!s.ok)return {label:s.error==='Unverified source'?'Not configured':'Failed',kind:'bad',detail:s.error||'No snapshot returned'};
