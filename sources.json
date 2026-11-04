@@ -123,8 +123,11 @@
     "name": "Gilead Sciences",
     "employer": "Gilead Sciences",
     "ticker": "GILD",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "gilead.wd1.myworkdayjobs.com",
+    "tenant": "gilead",
+    "site": "gileadcareers"
   },
   {
     "name": "NVIDIA",
@@ -151,8 +154,11 @@
     "name": "Caterpillar",
     "employer": "Caterpillar",
     "ticker": "CAT",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "cat.wd5.myworkdayjobs.com",
+    "tenant": "cat",
+    "site": "CaterpillarCareers"
   },
   {
     "name": "Cummins",
@@ -168,8 +174,9 @@
     "ats": "workday",
     "tenant": "walmart",
     "site": "WalmartExternal",
-    "host": "walmart.wd5.myworkdayjobs.com",
-    "enabled": true
+    "host": "walmart.wd504.myworkdayjobs.com",
+    "enabled": true,
+    "search_term": "analyst"
   },
   {
     "name": "UPS",
@@ -185,8 +192,12 @@
     "name": "Target",
     "employer": "Target",
     "ticker": "TGT",
-    "ats": "unverified",
-    "enabled": false
+    "ats": "workday",
+    "enabled": true,
+    "host": "target.wd5.myworkdayjobs.com",
+    "tenant": "target",
+    "site": "targetcareers",
+    "search_term": "analyst"
   },
   {
     "name": "Nike",
