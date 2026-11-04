@@ -17,4 +17,4 @@ if existing:
     if existing['state']=='CLOSED':gh('issue','reopen',str(existing['number']))
 else:gh('issue','create','--title',day,'--body',body)
 for i in issues:
-    if i['title']!=day and i['state']=='OPEN' and re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',i['title']):gh('issue','close',str(i['number']))
+    if i['title']!=day and i['state']=='OPEN' and re.fullmatch(r'\d{4}-\d{2}-\d{2}',i['title']):gh('issue','close',str(i['number']))
