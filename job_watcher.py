@@ -3,6 +3,8 @@ import argparse,csv,gzip,json,re
 from datetime import datetime,timezone
 from pathlib import Path
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 ROOT=Path(__file__).resolve().parent
 DATA=ROOT/'data'
 COLS='posting_id source source_id employer title location department posted_date url in_role first_run first_seen last_seen status removed_date'.split()
@@ -10,34 +12,55 @@ ROLE=re.compile(r'\b(financial?\s+(?:planning|analyst|analytics|data)|fp\s*&\s*a
 def in_role(t):return bool(ROLE.search(t or ''))
 def slug(t):return re.sub('[^a-z0-9]+','-',t.lower()).strip('-')
 def sources():return json.loads((ROOT/'sources.json').read_text())
+def make_session():
+    session = requests.Session()
+    retry = Retry(total=3, connect=3, read=2, status=3,
+                  backoff_factor=1.5, status_forcelist=[429, 500, 502, 503, 504],
+                  allowed_methods=frozenset(['POST', 'GET']), respect_retry_after_header=True)
+    session.mount('https://', HTTPAdapter(max_retries=retry))
+    return session
+
 def get_workday(session,s):
     url=f"https://{s['host']}/wday/cxs/{s['tenant']}/{s['site']}/jobs"
-    jobs=[];offset=0
+    jobs=[];offset=0;page_size=20;seen_offsets=set()
     while True:
-        response=session.post(url,json={'limit':20,'offset':offset,'searchText':s.get('search_term',''),'appliedFacets':{}},headers={'Accept':'application/json','User-Agent':'FDA-Job-Watcher/1.0'},timeout=35)
+        response=session.post(url,json={'limit':page_size,'offset':offset,'searchText':s.get('search_term',''),'appliedFacets':{}},headers={'Accept':'application/json','User-Agent':'FDA-Job-Watcher/1.0'},timeout=35)
         response.raise_for_status();payload=response.json()
         batch=payload.get('jobPostings')
         if not isinstance(batch,list):raise ValueError('Missing jobPostings')
         total=payload.get('total',len(batch))
+        if not isinstance(total,int) or total < 0: raise ValueError('Invalid total count')
+        if offset in seen_offsets: raise ValueError('Repeated pagination offset')
+        seen_offsets.add(offset)
         if total>5000 and not s.get('search_term'):raise ValueError('Over 5000 jobs: configure search_term')
         jobs+=batch
         if len(jobs)>=total:break
         if not batch:raise ValueError('Incomplete pagination')
         offset+=len(batch)
+        if offset>10000:raise ValueError('Unexpected pagination beyond 10000 postings')
     return {'jobPostings':jobs,'total':len(jobs)}
 def collect(day,session=None):
-    session=session or requests.Session();p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True);result=[]
+    session=session or make_session();p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True);result=[]
     for s in sources():
-        dest=p/(slug(s['name'])+'.json.gz');dest.unlink(missing_ok=True)
+        dest=p/(slug(s['name'])+'.json.gz')
         r={'name':s['name'],'ok':False,'count':0}
         if s.get('enabled'):
             try:
                 if s.get('ats')!='workday':raise ValueError('Adapter unavailable')
                 raw=get_workday(session,s)
-                with gzip.open(dest,'wt',encoding='utf8') as f:json.dump(raw,f)
+                temp=dest.with_suffix('.tmp')
+                try:
+                    with gzip.open(temp,'wt',encoding='utf8') as f:json.dump(raw,f)
+                    temp.replace(dest)
+                finally:
+                    temp.unlink(missing_ok=True)
                 r.update(ok=True,count=len(raw['jobPostings']))
-            except Exception as e:r['error']=str(e)[:180];dest.unlink(missing_ok=True)
-        else:r['error']='Unverified source'
+            except Exception as e:
+                r['error']=str(e)[:180]
+                dest.unlink(missing_ok=True)
+        else:
+            r['error']='Unverified source'
+            dest.unlink(missing_ok=True)
         result.append(r)
     return result
 def normalize(s,raw):
