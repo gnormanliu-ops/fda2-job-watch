@@ -36,7 +36,7 @@ Browse to `http://localhost:8000/site/` locally. GitHub Pages publishes `site/` 
 Case-insensitive: financial analyst/planning/data, FP&A, finance analyst/manager/associate, cost analyst, business analyst, data analyst, risk analyst, investment analyst, operations analyst, treasury analyst, controller. All vacancies are retained even when they do not match.
 
 ## ATS sources
-Every employer and its ATS state is listed in `sources.json`. Entries with `ats: unverified` are not yet usable sources. For the preliminary Workday entries, the endpoint is `https://HOST/wday/cxs/TENANT/SITE/jobs`; each needs a real successful paginated JSON test. If a board has over 5,000 results, set `search_term` and document it here. Never scrape HTML as a fallback.
+Every employer and its ATS state is listed in `sources.json`. Entries with `ats: unverified` are not yet usable sources. CVS Health uses `search_term: analyst` to constrain a potentially large source; its snapshots therefore cover that term rather than the full board. For the preliminary Workday entries, the endpoint is `https://HOST/wday/cxs/TENANT/SITE/jobs`; each needs a real successful paginated JSON test. If a board has over 5,000 results, set `search_term` and document it here. Never scrape HTML as a fallback.
 
 ## Required GitHub setup
 In repository Settings → Pages choose **GitHub Actions**. Enable Actions workflow write permissions and Issues. Trigger the Daily job watch workflow once and inspect source failures. The instructor requires at least seven separate UTC dates with successful raw snapshots; a completed Actions job with zero successful feeds is not a data-success day. Check Blackboard for first-run and submission deadlines. Daily runs may be delayed by GitHub scheduling.
