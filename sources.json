@@ -179,7 +179,7 @@
     "enabled": true,
     "host": "hcmportal.wd5.myworkdayjobs.com",
     "tenant": "hcmportal",
-    "site": "search"
+    "site": "Search"
   },
   {
     "name": "Target",
