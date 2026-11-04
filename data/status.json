@@ -1,9 +1,151 @@
 {
-  "run_time": "",
-  "first_run_date": "",
-  "days_with_success": 0,
-  "open": 0,
+  "run_time": "2026-11-04T02:19:53.708663Z",
+  "first_run_date": "2026-11-04",
+  "days_with_success": 1,
+  "open": 7362,
   "new_today": 0,
   "removed_today": 0,
-  "sources": []
+  "sources": [
+    {
+      "name": "Boeing",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "GE Aerospace",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "GE Vernova",
+      "ok": true,
+      "count": 2217
+    },
+    {
+      "name": "General Motors",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "Applied Materials",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "Micron Technology",
+      "ok": true,
+      "count": 2880
+    },
+    {
+      "name": "Intel",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "Rockwell Automation",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "3M",
+      "ok": true,
+      "count": 40
+    },
+    {
+      "name": "Pfizer",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Eli Lilly",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Bristol Myers Squibb",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Gilead Sciences",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "NVIDIA",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Tesla",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Ford Motor",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Caterpillar",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Cummins",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Walmart",
+      "ok": false,
+      "count": 0,
+      "error": "422 Client Error: Unprocessable Entity for url: https://walmart.wd5.myworkdayjobs.com/wday/cxs/walmart/WalmartExternal/jobs"
+    },
+    {
+      "name": "UPS",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Target",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Nike",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "CVS Health",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    },
+    {
+      "name": "Capital One",
+      "ok": true,
+      "count": 2025
+    },
+    {
+      "name": "Mastercard",
+      "ok": false,
+      "count": 0,
+      "error": "Unverified source"
+    }
+  ]
 }
