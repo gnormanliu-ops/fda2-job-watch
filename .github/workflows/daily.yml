@@ -1,0 +1,32 @@
+name: Daily job watch
+on:
+  schedule:
+    - cron: '19 10 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: daily-job-watch
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: python job_watcher.py run
+      - name: Commit daily data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/raw data/history.csv data/status.json
+          git diff --cached --quiet || (git commit -m "Daily job snapshot $(date -u +%F)" && git push)
+      - name: Publish daily Issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python issue_report.py

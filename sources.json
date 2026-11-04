@@ -1,0 +1,207 @@
+[
+  {
+    "name": "Boeing",
+    "employer": "Boeing",
+    "ticker": "BA",
+    "ats": "workday",
+    "tenant": "boeing",
+    "site": "External_Careers",
+    "host": "boeing.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "GE Aerospace",
+    "employer": "GE Aerospace",
+    "ticker": "GE",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "GE Vernova",
+    "employer": "GE Vernova",
+    "ticker": "GEV",
+    "ats": "workday",
+    "tenant": "gevernova",
+    "site": "Vernova_ExternalSite",
+    "host": "gevernova.wd5.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "General Motors",
+    "employer": "General Motors",
+    "ticker": "GM",
+    "ats": "workday",
+    "tenant": "generalmotors",
+    "site": "Careers_GM",
+    "host": "generalmotors.wd5.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Applied Materials",
+    "employer": "Applied Materials",
+    "ticker": "AMAT",
+    "ats": "workday",
+    "tenant": "amat",
+    "site": "External",
+    "host": "amat.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Micron Technology",
+    "employer": "Micron Technology",
+    "ticker": "MU",
+    "ats": "workday",
+    "tenant": "micron",
+    "site": "External",
+    "host": "micron.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Intel",
+    "employer": "Intel",
+    "ticker": "INTC",
+    "ats": "workday",
+    "tenant": "intel",
+    "site": "External",
+    "host": "intel.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Rockwell Automation",
+    "employer": "Rockwell Automation",
+    "ticker": "ROK",
+    "ats": "workday",
+    "tenant": "rockwellautomation",
+    "site": "External_Rockwell_Automation",
+    "host": "rockwellautomation.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "3M",
+    "employer": "3M",
+    "ticker": "MMM",
+    "ats": "workday",
+    "tenant": "3m",
+    "site": "Search",
+    "host": "3m.wd1.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Pfizer",
+    "employer": "Pfizer",
+    "ticker": "PFE",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Eli Lilly",
+    "employer": "Eli Lilly",
+    "ticker": "LLY",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Bristol Myers Squibb",
+    "employer": "Bristol Myers Squibb",
+    "ticker": "BMY",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Gilead Sciences",
+    "employer": "Gilead Sciences",
+    "ticker": "GILD",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "NVIDIA",
+    "employer": "NVIDIA",
+    "ticker": "NVDA",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Tesla",
+    "employer": "Tesla",
+    "ticker": "TSLA",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Ford Motor",
+    "employer": "Ford Motor",
+    "ticker": "F",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Caterpillar",
+    "employer": "Caterpillar",
+    "ticker": "CAT",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Cummins",
+    "employer": "Cummins",
+    "ticker": "CMI",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Walmart",
+    "employer": "Walmart",
+    "ticker": "WMT",
+    "ats": "workday",
+    "tenant": "walmart",
+    "site": "WalmartExternal",
+    "host": "walmart.wd5.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "UPS",
+    "employer": "UPS",
+    "ticker": "UPS",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Target",
+    "employer": "Target",
+    "ticker": "TGT",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Nike",
+    "employer": "Nike",
+    "ticker": "NKE",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "CVS Health",
+    "employer": "CVS Health",
+    "ticker": "CVS",
+    "ats": "unverified",
+    "enabled": false
+  },
+  {
+    "name": "Capital One",
+    "employer": "Capital One",
+    "ticker": "COF",
+    "ats": "workday",
+    "tenant": "capitalone",
+    "site": "Capital_One",
+    "host": "capitalone.wd12.myworkdayjobs.com",
+    "enabled": true
+  },
+  {
+    "name": "Mastercard",
+    "employer": "Mastercard",
+    "ticker": "MA",
+    "ats": "unverified",
+    "enabled": false
+  }
+]
