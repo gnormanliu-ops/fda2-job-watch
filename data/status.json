@@ -1,10 +1,10 @@
 {
-  "run_time": "2026-11-07T16:30:21.875030Z",
+  "run_time": "2026-11-08T16:43:10.344808Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 4,
-  "open": 8436,
-  "new_today": 255,
-  "removed_today": 291,
+  "days_with_success": 5,
+  "open": 8418,
+  "new_today": 18,
+  "removed_today": 36,
   "sources": [
     {
       "name": "Boeing",
@@ -14,12 +14,12 @@
     {
       "name": "GE Aerospace",
       "ok": true,
-      "count": 601
+      "count": 596
     },
     {
       "name": "GE Vernova",
       "ok": true,
-      "count": 2175
+      "count": 2169
     },
     {
       "name": "General Motors",
@@ -34,7 +34,7 @@
     {
       "name": "Micron Technology",
       "ok": true,
-      "count": 2890
+      "count": 2887
     },
     {
       "name": "Intel",
@@ -124,12 +124,12 @@
     {
       "name": "CVS Health",
       "ok": true,
-      "count": 115
+      "count": 113
     },
     {
       "name": "Capital One",
       "ok": true,
-      "count": 2055
+      "count": 2053
     },
     {
       "name": "Mastercard",
