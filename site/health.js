@@ -46,7 +46,7 @@ async function renderDashboard(){
    '<div><div class="muted">Data health</div>'+badge(health.label,health.kind)+'<p class="muted">'+health.successful+' / '+(s.sources||[]).length+' sources successful; '+health.failed+' failed/unconfigured; '+health.suspicious+' require coverage review.</p></div>'+
    '</div><p class="muted">Health uses last recorded run time, success flags, and suspicious counts. It does not verify whether an employer listed every job. Updated automatically when you open this page; refresh to check a new run.</p>';
   const list=s.sources||[];
-  document.getElementById('sources').innerHTML=list.map(x=>{let st=sourceHealth(x);return '<tr><td>'+esc(x.name)+'</td><td>'+badge(st.label,st.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(st.detail)+'</td></tr>'}).join('')||'<tr><td colspan="4">No collection report yet</td></tr>';
+  document.getElementById('sources').innerHTML=list.map(x=>{let st=sourceHealth(x);return '<tr><td>'+companyMark(x.name)+'</td><td>'+badge(st.label,st.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(st.detail)+'</td></tr>'}).join('')||'<tr><td colspan="4">No collection report yet</td></tr>';
   document.getElementById('new').innerHTML=rows.filter(r=>r.first_seen===latest&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
   document.getElementById('removed').innerHTML=rows.filter(r=>r.removed_date===latest).map(r=>row(r)).join('')||'<tr><td colspan="5">No removed postings detected.</td></tr>';
  }catch(e){document.getElementById('run').textContent='Data unavailable: '+e.message;document.getElementById('update-health').textContent='Unable to determine data health.'}
