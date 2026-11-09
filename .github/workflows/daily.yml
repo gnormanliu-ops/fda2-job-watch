@@ -7,6 +7,7 @@ on:
     paths:
       - 'sources.json'
       - 'job_watcher.py'
+      - 'issue_report.py'
       - '.github/workflows/daily.yml'
 permissions:
   contents: write
@@ -69,7 +70,16 @@ jobs:
       - name: Publish or update daily issue
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python issue_report.py
+        run: |
+          for attempt in 1 2 3; do
+            if python issue_report.py; then
+              exit 0
+            fi
+            echo "::warning::Issue publication attempt $attempt failed"
+            sleep 5
+          done
+          echo "::error::Daily Issue publication failed after 3 attempts; raw job snapshots remain committed."
+          exit 1
       - name: Upload collector diagnostic log
         if: always()
         uses: actions/upload-artifact@v4
