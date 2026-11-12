@@ -37,7 +37,7 @@ function healthSummary(status,rows){
 function boardDetails(config){
  if(!config||!config.enabled||config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
  // Construct links exclusively from our version-controlled source registry.
- if(!/^[a-z0-9.-]+\\.myworkdayjobs\\.com$/i.test(config.host))return {board:'Invalid host',scope:'Review source config'};
+ if(!/^[a-z0-9.-]+\.myworkdayjobs\.com$/i.test(config.host))return {board:'Invalid host',scope:'Review source config'};
  const base='https://'+config.host;
  const board=base+'/'+encodeURIComponent(config.site);
  const api=base+'/wday/cxs/'+encodeURIComponent(config.tenant)+'/'+encodeURIComponent(config.site)+'/jobs';
