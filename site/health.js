@@ -34,13 +34,22 @@ function healthSummary(status,rows){
  if(offline){state='warn';label='Offline / cached data'}
  return {state,label,list,configured:configured.length,working:working.length,broken:broken.length,unconfigured,review,ageHours,consistent,rowsOpen,offline};
 }
+function boardDetails(config){
+ if(!config||!config.enabled||config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
+ // Construct links exclusively from our version-controlled source registry.
+ if(!/^[a-z0-9.-]+\\.myworkdayjobs\\.com$/i.test(config.host))return {board:'Invalid host',scope:'Review source config'};
+ const base='https://'+config.host;
+ const board=base+'/'+encodeURIComponent(config.site);
+ const api=base+'/wday/cxs/'+encodeURIComponent(config.tenant)+'/'+encodeURIComponent(config.site)+'/jobs';
+ return {board:'Workday · <a target="_blank" rel="noopener noreferrer" href="'+esc(board)+'">Job board</a><details class="api-detail"><summary>JSON API (POST)</summary><code>'+esc(api)+'</code></details>',scope:config.search_term?'Search: '+esc(config.search_term):'All listed postings (configured)'};
+}
 function badge(label,kind){return '<span class="health-pill health-'+kind+'">'+esc(label)+'</span>'}
 function statistic(label,value,detail){
  return '<div><div class="muted">'+esc(label)+'</div><strong>'+esc(value)+'</strong><p class="muted">'+esc(detail)+'</p></div>';
 }
 async function renderDashboard(){
  try {
-  const [s,rows]=await Promise.all([load('status.json'),load('history.csv')]);
+  const [s,rows,sourceConfig]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[])]);
   const h=healthSummary(s,rows),last=(s.run_time||'').slice(0,10);
   $('#run').textContent='Last recorded collection: '+fmtTime(s.run_time,'America/Chicago')+' ('+fmtTime(s.run_time,'UTC')+')';
   $('#cards').innerHTML=[['Successful UTC days',s.days_with_success||0],['Open postings',s.open||0],['New today',s.new_today||0],['Removed today',s.removed_today||0]].map(x=>'<div class="card"><div class="number">'+esc(x[1])+'</div>'+esc(x[0])+'</div>').join('');
@@ -55,7 +64,8 @@ async function renderDashboard(){
     statistic('Completeness review',String(h.review)+' sources', 'Exactly 40 or 0 listings; review pagination and source scope. These are not classified as request failures.')+
     '<div><div class="muted">History consistency</div>'+badge(h.consistent?'Counts agree':'Counts differ',h.consistent?'good':'bad')+'<p class="muted">'+h.rowsOpen+' open history rows vs '+esc(s.open)+' in status.json.</p></div>'+
     '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all 25 boards were fully captured.</p>';
-  $('#sources').innerHTML=h.list.map(x=>{const state=sourceHealth(x);return '<tr><td>'+companyMark(x.name)+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="4">No status report available</td></tr>';
+  const metadata=new Map(sourceConfig.map(x=>[x.name,x]));
+  $('#sources').innerHTML=h.list.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
   $('#new').innerHTML=rows.filter(r=>r.first_seen===last&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
   $('#removed').innerHTML=rows.filter(r=>r.removed_date===last).map(r=>row(r)).join('')||'<tr><td colspan="5">No removed postings detected.</td></tr>';
  }catch(e){
