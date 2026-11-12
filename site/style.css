@@ -10,3 +10,10 @@
 .health-neutral{background:#293748;color:#c3cedb}
 .health-grid{align-items:start}
 .health-grid strong{overflow-wrap:anywhere}
+
+.api-detail{margin-top:5px;max-width:260px;color:#a9bdd5;font-size:.81rem}
+.api-detail summary{cursor:pointer}
+.api-detail code{display:block;margin-top:6px;overflow-wrap:anywhere;font-size:.75rem}
+#sources td{vertical-align:top}
+#sources td:nth-child(2){min-width:170px}
+#sources td:nth-child(3){min-width:135px}
