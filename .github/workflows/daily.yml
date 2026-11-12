@@ -92,6 +92,9 @@ jobs:
 
   deploy:
     name: Publish newest data to GitHub Pages
+    concurrency:
+      group: fda-job-watcher-pages
+      cancel-in-progress: false
     needs: collect
     if: ${{ always() && needs.collect.result != 'cancelled' }}
     runs-on: ubuntu-latest
