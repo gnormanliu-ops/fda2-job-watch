@@ -7,6 +7,7 @@ on:
     paths:
       - 'sources.json'
       - 'job_watcher.py'
+      - 'commit_snapshot.py'
       - 'issue_report.py'
       - '.github/workflows/daily.yml'
 permissions:
@@ -31,6 +32,7 @@ jobs:
         run: python -m pytest -q
       - name: Collect sources and rebuild data
         run: |
+          set -o pipefail
           python job_watcher.py run 2>&1 | tee collect.log
           python - <<'PY'
           import json
@@ -43,30 +45,8 @@ jobs:
           if not ok:
               raise SystemExit('No source returned valid JSON; refusing to publish an empty collection as success.')
           PY
-      - name: Commit daily data with remote update handling
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/raw data/history.csv data/status.json
-          if git diff --cached --quiet; then
-            echo "No data changes to commit"
-          else
-            git commit -m "Daily job snapshot $(date -u +%F)"
-            for attempt in 1 2 3; do
-              git fetch origin main
-              if ! git rebase origin/main; then
-                git rebase --abort || true
-                echo "::error::Data commit conflicts with a newer change; no force push performed."
-                exit 1
-              fi
-              if git push origin HEAD:main; then
-                exit 0
-              fi
-              echo "Push race detected, retrying ($attempt/3)"
-              sleep 5
-            done
-            exit 1
-          fi
+      - name: Reconcile and commit daily snapshots safely
+        run: python commit_snapshot.py
       - name: Publish or update daily issue
         env:
           GH_TOKEN: ${{ github.token }}
