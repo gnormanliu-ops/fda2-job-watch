@@ -1,7 +1,23 @@
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function csv(text){let rows=[],row=[],v='',q=false;for(let i=0;i<text.length;i++){let c=text[i];if(c==='"'){if(q&&text[i+1]==='"'){v+='"';i++}else q=!q}else if(c===','&&!q){row.push(v);v=''}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&text[i+1]==='\n')i++;row.push(v);if(row.some(Boolean))rows.push(row);row=[];v=''}else v+=c}if(v||row.length){row.push(v);rows.push(row)}let head=rows.shift()||[];return rows.map(r=>Object.fromEntries(head.map((h,i)=>[h,r[i]||''])))}
-async function load(name){let path='./data/'+name;try{let r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(r.status);let data=await r.text();localStorage.setItem('jobcache:'+name,data);return name.endsWith('.csv')?csv(data):JSON.parse(data)}catch(e){let data=localStorage.getItem('jobcache:'+name);if(!data)throw e;return name.endsWith('.csv')?csv(data):JSON.parse(data)}}
+window.jobDataOrigin={};
+async function load(name){
+ const path='./data/'+name;
+ try{
+  const r=await fetch(path,{cache:'no-store'});
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const data=await r.text(),parsed=name.endsWith('.csv')?csv(data):JSON.parse(data);
+  localStorage.setItem('jobcache:'+name,data);
+  window.jobDataOrigin[name]='network';
+  return parsed;
+ }catch(e){
+  const data=localStorage.getItem('jobcache:'+name);
+  if(!data)throw e;
+  window.jobDataOrigin[name]='cache';
+  return name.endsWith('.csv')?csv(data):JSON.parse(data);
+ }
+}
 
 // Company marks use official corporate domains and a favicon endpoint.
 // Text remains readable if a favicon is unavailable or blocked.
