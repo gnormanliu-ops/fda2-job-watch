@@ -89,3 +89,34 @@ jobs:
             collect.log
             data/status.json
           if-no-files-found: ignore
+
+  deploy:
+    name: Publish newest data to GitHub Pages
+    needs: collect
+    if: ${{ always() && needs.collect.result != 'cancelled' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Pull latest committed snapshots
+        run: git pull --ff-only origin main
+      - uses: actions/configure-pages@v5
+      - name: Assemble site and latest data
+        run: |
+          mkdir -p _public
+          cp -R site/. _public/
+          cp -R data _public/data
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _public
+      - name: Deploy latest snapshot
+        id: deployment
+        uses: actions/deploy-pages@v4
