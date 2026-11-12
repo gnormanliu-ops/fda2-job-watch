@@ -54,7 +54,8 @@ def publish(max_attempts=5):
             # files that were successful in this particular run; failed sources
             # must not delete successful data committed by another run.
             for source in backup.glob("*.json.gz"):
-                if not (target / source.name).exists():\n                    shutil.copy2(source, target / source.name)
+                if not (target / source.name).exists():
+                    shutil.copy2(source, target / source.name)
 
             # The source summary must describe the raw files actually published.
             by_name = {watcher.slug(s["name"]): s for s in result}
