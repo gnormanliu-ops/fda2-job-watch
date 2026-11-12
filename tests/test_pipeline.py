@@ -53,3 +53,11 @@ def test_failed_source_does_not_count_as_success(tmp_path, monkeypatch):
     report=jw.collect('2026-11-04',session=object())
     assert report[0]['ok'] is False
     assert not list((jw.DATA/'raw').glob('*/*.json.gz'))
+
+
+def test_pipeline_scripts_have_valid_python_syntax():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    for filename in ['job_watcher.py', 'commit_snapshot.py', 'issue_report.py']:
+        source = (root / filename).read_text(encoding='utf-8')
+        compile(source, str(root / filename), 'exec')
