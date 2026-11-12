@@ -1,10 +1,10 @@
 {
-  "run_time": "2026-11-12T20:58:24.753317Z",
+  "run_time": "2026-11-12T21:04:37.469241Z",
   "first_run_date": "2026-11-04",
   "days_with_success": 9,
-  "open": 8501,
+  "open": 8499,
   "new_today": 551,
-  "removed_today": 573,
+  "removed_today": 576,
   "sources": [
     {
       "name": "Boeing",
@@ -14,12 +14,12 @@
     {
       "name": "GE Aerospace",
       "ok": true,
-      "count": 589
+      "count": 588
     },
     {
       "name": "GE Vernova",
       "ok": true,
-      "count": 2217
+      "count": 2216
     },
     {
       "name": "General Motors",
