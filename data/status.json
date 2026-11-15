@@ -1,5 +1,5 @@
 {
-  "run_time": "2026-11-15T17:15:14.656735Z",
+  "run_time": "2026-11-15T17:37:04.638186Z",
   "first_run_date": "2026-11-04",
   "days_with_success": 12,
   "open": 8425,
@@ -72,33 +72,9 @@
       "count": 40
     },
     {
-      "name": "NVIDIA",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
-    },
-    {
-      "name": "Tesla",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
-    },
-    {
-      "name": "Ford Motor",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
-    },
-    {
       "name": "Caterpillar",
       "ok": true,
       "count": 40
-    },
-    {
-      "name": "Cummins",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
     },
     {
       "name": "Walmart",
@@ -114,12 +90,6 @@
       "name": "Target",
       "ok": true,
       "count": 40
-    },
-    {
-      "name": "Nike",
-      "ok": false,
-      "count": 0,
-      "error": "Unverified source"
     },
     {
       "name": "CVS Health",
