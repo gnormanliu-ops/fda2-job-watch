@@ -130,27 +130,6 @@
     "site": "gileadcareers"
   },
   {
-    "name": "NVIDIA",
-    "employer": "NVIDIA",
-    "ticker": "NVDA",
-    "ats": "unverified",
-    "enabled": false
-  },
-  {
-    "name": "Tesla",
-    "employer": "Tesla",
-    "ticker": "TSLA",
-    "ats": "unverified",
-    "enabled": false
-  },
-  {
-    "name": "Ford Motor",
-    "employer": "Ford Motor",
-    "ticker": "F",
-    "ats": "unverified",
-    "enabled": false
-  },
-  {
     "name": "Caterpillar",
     "employer": "Caterpillar",
     "ticker": "CAT",
@@ -159,13 +138,6 @@
     "host": "cat.wd5.myworkdayjobs.com",
     "tenant": "cat",
     "site": "CaterpillarCareers"
-  },
-  {
-    "name": "Cummins",
-    "employer": "Cummins",
-    "ticker": "CMI",
-    "ats": "unverified",
-    "enabled": false
   },
   {
     "name": "Walmart",
@@ -198,13 +170,6 @@
     "tenant": "target",
     "site": "targetcareers",
     "search_term": "analyst"
-  },
-  {
-    "name": "Nike",
-    "employer": "Nike",
-    "ticker": "NKE",
-    "ats": "unverified",
-    "enabled": false
   },
   {
     "name": "CVS Health",
