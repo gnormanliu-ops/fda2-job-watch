@@ -1,50 +1,45 @@
 {
-  "run_time": "2026-11-14T16:38:35.179952Z",
+  "run_time": "2026-11-15T17:15:14.656735Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 11,
-  "open": 8440,
-  "new_today": 99,
-  "removed_today": 133,
+  "days_with_success": 12,
+  "open": 8425,
+  "new_today": 149,
+  "removed_today": 183,
   "sources": [
     {
       "name": "Boeing",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "GE Aerospace",
       "ok": true,
-      "count": 588
+      "count": 589
     },
     {
       "name": "GE Vernova",
       "ok": true,
-      "count": 2180
+      "count": 2163
     },
     {
       "name": "General Motors",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Applied Materials",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Micron Technology",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 2898
     },
     {
       "name": "Intel",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Rockwell Automation",
@@ -53,9 +48,8 @@
     },
     {
       "name": "3M",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Pfizer",
@@ -97,9 +91,8 @@
     },
     {
       "name": "Caterpillar",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Cummins",
@@ -114,15 +107,13 @@
     },
     {
       "name": "UPS",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Target",
-      "ok": false,
-      "count": 0,
-      "error": "Expecting value: line 1 column 1 (char 0)"
+      "ok": true,
+      "count": 40
     },
     {
       "name": "Nike",
@@ -133,12 +124,12 @@
     {
       "name": "CVS Health",
       "ok": true,
-      "count": 116
+      "count": 114
     },
     {
       "name": "Capital One",
       "ok": true,
-      "count": 2060
+      "count": 2061
     },
     {
       "name": "Mastercard",
