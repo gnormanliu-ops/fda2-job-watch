@@ -1,80 +1,94 @@
 {
-  "run_time": "2026-11-15T17:37:04.638186Z",
+  "run_time": "2026-11-16T20:33:01.622213Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 12,
+  "days_with_success": 13,
   "open": 8425,
-  "new_today": 149,
-  "removed_today": 183,
+  "new_today": 3,
+  "removed_today": 3,
   "sources": [
     {
       "name": "Boeing",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='boeing.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/boeing/External_Careers/jobs (Caused by ResponseError('too many 429 err"
     },
     {
       "name": "GE Aerospace",
-      "ok": true,
-      "count": 589
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='geaerospace.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/geaerospace/GE_ExternalSite/jobs (Caused by ResponseError('too man"
     },
     {
       "name": "GE Vernova",
-      "ok": true,
-      "count": 2163
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='gevernova.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/gevernova/Vernova_ExternalSite/jobs (Caused by ResponseError('too ma"
     },
     {
       "name": "General Motors",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='generalmotors.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/generalmotors/Careers_GM/jobs (Caused by ResponseError('too many"
     },
     {
       "name": "Applied Materials",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='amat.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/amat/External/jobs (Caused by ResponseError('too many 429 error responses"
     },
     {
       "name": "Micron Technology",
-      "ok": true,
-      "count": 2898
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='micron.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/micron/External/jobs (Caused by ResponseError('too many 429 error respo"
     },
     {
       "name": "Intel",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='intel.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/intel/External/jobs (Caused by ResponseError('too many 429 error respons"
     },
     {
       "name": "Rockwell Automation",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='rockwellautomation.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/rockwellautomation/External_Rockwell_Automation/jobs (Cause"
     },
     {
       "name": "3M",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='3m.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/3m/Search/jobs (Caused by ResponseError('too many 429 error responses'))"
     },
     {
       "name": "Pfizer",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='pfizer.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/pfizer/PfizerCareers/jobs (Caused by ResponseError('too many 429 error "
     },
     {
       "name": "Eli Lilly",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='lilly.wd115.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/lilly/LLY/jobs (Caused by ResponseError('too many 429 error responses'"
     },
     {
       "name": "Bristol Myers Squibb",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='bristolmyerssquibb.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/bristolmyerssquibb/BMS/jobs (Caused by ResponseError('too m"
     },
     {
       "name": "Gilead Sciences",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='gilead.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/gilead/gileadcareers/jobs (Caused by ResponseError('too many 429 error "
     },
     {
       "name": "Caterpillar",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='cat.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/cat/CaterpillarCareers/jobs (Caused by ResponseError('too many 429 error r"
     },
     {
       "name": "Walmart",
@@ -83,28 +97,33 @@
     },
     {
       "name": "UPS",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='hcmportal.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/hcmportal/Search/jobs (Caused by ResponseError('too many 429 error r"
     },
     {
       "name": "Target",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='target.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/target/targetcareers/jobs (Caused by ResponseError('too many 429 error "
     },
     {
       "name": "CVS Health",
-      "ok": true,
-      "count": 114
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='cvshealth.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/cvshealth/CVS_Health_Careers/jobs (Caused by ResponseError('too many"
     },
     {
       "name": "Capital One",
-      "ok": true,
-      "count": 2061
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='capitalone.wd12.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/capitalone/Capital_One/jobs (Caused by ResponseError('too many 429"
     },
     {
       "name": "Mastercard",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "error": "HTTPSConnectionPool(host='mastercard.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/mastercard/CorporateCareers/jobs (Caused by ResponseError('too many"
     }
   ]
 }
