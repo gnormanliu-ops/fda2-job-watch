@@ -34,20 +34,38 @@ def publish(max_attempts=5):
     if not today_dir.is_dir():
         raise RuntimeError("No raw snapshot folder for this collection date")
     raw_files = list(today_dir.glob("*.json.gz"))
-    if not raw_files:
-        raise RuntimeError("No successful source snapshots found today")
+    successful = any(s["ok"] for s in collection["sources"])
+    if successful and not raw_files:
+        raise RuntimeError("Successful collection has no raw snapshot files")
+    attempt_path = DATA / "attempt.json"
+    attempt = dict(run_time=collection["run_time"], sources=collection["sources"])
 
     # Preserve the current run before synchronizing with the remote branch.
     with tempfile.TemporaryDirectory(prefix="fda-snapshot-") as tmp:
         backup = Path(tmp) / "raw"
         shutil.copytree(today_dir, backup)
-        result = collection["sources"]
+        result = [dict(source) for source in collection["sources"]]
 
-        for attempt in range(1, max_attempts + 1):
+        for attempt_no in range(1, max_attempts + 1):
             git("fetch", "origin", "main")
             # The job only modifies generated data, never user source code.
             # Resetting to main prevents rebase conflicts with concurrent pushes.
             git("reset", "--hard", "origin/main")
+            # Record the actual attempt independently from published snapshot statistics.
+            attempt_path.write_text(json.dumps(attempt, indent=2) + "\n")
+            if not successful:
+                # Never replace the last successful history or count a failed day.
+                git("add", "data/attempt.json")
+                if git("diff", "--cached", "--quiet", check=False).returncode == 0:
+                    return
+                git("commit", "-m", "Collection attempt failed " + day)
+                push = git("push", "origin", "HEAD:main", check=False)
+                if push.returncode == 0:
+                    print("Failure diagnostics saved; historical data unchanged")
+                    return
+                if attempt_no != max_attempts:
+                    time.sleep(attempt_no * 3)
+                continue
             target = DATA / "raw" / day
             target.mkdir(parents=True, exist_ok=True)
             # Keep any snapshots already published by another run. Add or update
@@ -61,11 +79,12 @@ def publish(max_attempts=5):
             by_name = {watcher.slug(s["name"]): s for s in result}
             for name, source in by_name.items():
                 saved = target / (name + ".json.gz")
-                if saved.is_file() and not source["ok"]:
+                if saved.is_file():
                     with gzip.open(saved, "rt", encoding="utf8") as fh:
                         jobs = json.load(fh).get("jobPostings", [])
                     source.update(ok=True, count=len(jobs))
                     source.pop("error", None)
+                    source.pop("error_code", None)
 
             # Rebuild deterministically from the union of successful raw files.
             rows, dates = watcher.build()
@@ -79,7 +98,7 @@ def publish(max_attempts=5):
                 sources=result,
             )
             status_path.write_text(json.dumps(stat, indent=2) + "\n")
-            git("add", "data/raw", "data/history.csv", "data/status.json")
+            git("add", "data/raw", "data/history.csv", "data/status.json", "data/attempt.json")
 
             if git("diff", "--cached", "--quiet", check=False).returncode == 0:
                 print("Snapshots already present on origin/main; nothing to push")
@@ -88,11 +107,11 @@ def publish(max_attempts=5):
             git("commit", "-m", "Daily job snapshot " + day)
             push = git("push", "origin", "HEAD:main", check=False)
             if push.returncode == 0:
-                print(f"Daily data pushed successfully on attempt {attempt}")
+                print(f"Daily data pushed successfully on attempt {attempt_no}")
                 return
-            print(f"Push race on attempt {attempt}/{max_attempts}: {push.stderr[-500:]}")
-            if attempt != max_attempts:
-                time.sleep(attempt * 3)
+            print(f"Push race on attempt {attempt_no}/{max_attempts}: {push.stderr[-500:]}")
+            if attempt_no != max_attempts:
+                time.sleep(attempt_no * 3)
 
     raise RuntimeError("Unable to push data after refreshing from origin/main")
 
