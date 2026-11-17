@@ -35,11 +35,18 @@ jobs:
           print(f"Working sources: {len(ok)}/{len(s['sources'])}, open postings: {s['open']}")
           for x in s['sources']:
               print(f"{x['name']}: {'OK' if x['ok'] else 'FAILED'} ({x['count']}) {x.get('error', '')}")
-          if not ok:
-              raise SystemExit('No source returned valid JSON; refusing to publish an empty collection as success.')
           PY
       - name: Reconcile and commit daily snapshots safely
         run: python commit_snapshot.py
+      - name: Verify collection succeeded
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          attempt = json.loads(Path('data/attempt.json').read_text())
+          if not any(s['ok'] for s in attempt['sources']):
+              raise SystemExit('No source returned valid JSON. Failure report saved; no new snapshot day counted.')
+          PY
       - name: Publish or update daily issue
         env:
           GH_TOKEN: ${{ github.token }}
