@@ -10,17 +10,20 @@ function fmtTime(x,zone){
  return new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(d);
 }
 function sourceHealth(s){
+ if(s.error_code==='deferred')return {label:'Deferred',kind:'neutral',detail:s.error};
+ if(s.error_code==='rate_limited')return {label:'Rate limited (429)',kind:'bad',detail:s.error};
  if(s.error==='Unverified source')return {label:'Not configured',kind:'neutral',detail:'No verified JSON interface configured'};
  if(!s.ok)return {label:'Failed',kind:'bad',detail:s.error||'No snapshot returned'};
  if(s.count===0)return {label:'Empty response',kind:'warn',detail:'JSON request succeeded but contained no postings; investigate'};
  if(s.count===40)return {label:'OK · scope review',kind:'warn',detail:'JSON request succeeded. Exactly 40 returned; check that the board is not capped'};
  return {label:'OK',kind:'good',detail:'JSON snapshot saved; completeness not independently verified'};
 }
-function healthSummary(status,rows){
- const list=status.sources||[];
+function healthSummary(status,rows,attempt){
+ const list=attempt?.sources||status.sources||[];
  const configured=list.filter(s=>s.error!=='Unverified source');
  const working=configured.filter(s=>s.ok);
- const broken=configured.filter(s=>!s.ok);
+ const deferred=configured.filter(s=>s.error_code==='deferred').length;
+ const broken=configured.filter(s=>!s.ok&&s.error_code!=='deferred');
  const unconfigured=list.length-configured.length;
  const review=working.filter(s=>s.count===40||s.count===0).length;
  const dt=Date.parse(status.run_time||'');
@@ -31,8 +34,9 @@ function healthSummary(status,rows){
  let state='good',label='Collection operational';
  if(broken.length){state='warn';label='Collection degraded'}
  if(!working.length||ageHours>36||!consistent){state='bad';label=!consistent?'Data files disagree':ageHours>36?'Data update overdue':'No working sources'}
- if(offline){state='warn';label='Offline / cached data'}
- return {state,label,list,configured:configured.length,working:working.length,broken:broken.length,unconfigured,review,ageHours,consistent,rowsOpen,offline};
+ if(!working.length&&list.some(s=>s.error_code==='rate_limited')){state='bad';label='Workday rate limited (429)'}
+ if(offline&&state!=='bad'){state='warn';label='Offline / cached data'}
+ return {state,label,list,configured:configured.length,working:working.length,broken:broken.length,deferred,unconfigured,review,ageHours,consistent,rowsOpen,offline};
 }
 function boardDetails(config){
  if(!config||!config.enabled||config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
@@ -49,21 +53,23 @@ function statistic(label,value,detail){
 }
 async function renderDashboard(){
  try {
-  const [s,rows,sourceConfig]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[])]);
-  const h=healthSummary(s,rows),last=(s.run_time||'').slice(0,10);
-  $('#run').textContent='Last recorded collection: '+fmtTime(s.run_time,'America/Chicago')+' ('+fmtTime(s.run_time,'UTC')+')';
-  $('#cards').innerHTML=[['Successful UTC days',s.days_with_success||0],['Open postings',s.open||0],['New today',s.new_today||0],['Removed today',s.removed_today||0]].map(x=>'<div class="card"><div class="number">'+esc(x[1])+'</div>'+esc(x[0])+'</div>').join('');
+  const [s,rows,sourceConfig,a]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[]),load('attempt.json').catch(()=>null)]);
+  const attempt=a&&Date.parse(a.run_time)>=Date.parse(s.run_time)?a:null;
+  const h=healthSummary(s,rows,attempt),last=(s.run_time||'').slice(0,10);
+  $('#run').textContent='Last saved snapshot: '+fmtTime(s.run_time,'America/Chicago')+' ('+fmtTime(s.run_time,'UTC')+')';
+  $('#cards').innerHTML=[['Successful UTC days',s.days_with_success||0],['Open postings',s.open||0],['New (latest saved day)',s.new_today||0],['Removed (latest saved day)',s.removed_today||0]].map(x=>'<div class="card"><div class="number">'+esc(x[1])+'</div>'+esc(x[0])+'</div>').join('');
   const time=utcNextSchedule();
   $('#update-health').innerHTML=
     '<div class="health-grid">'+
     statistic('Scheduled collection','Daily 10:19 UTC','4:19 AM CST / 5:19 AM CDT. GitHub may start late.')+
     statistic('Next scheduled run',fmtTime(time,'America/Chicago'),fmtTime(time,'UTC'))+
     statistic('Latest data saved',fmtTime(s.run_time,'America/Chicago'),fmtTime(s.run_time,'UTC'))+
-    '<div><div class="muted">Collection health</div>'+badge(h.label,h.state)+'<p class="muted">'+h.working+'/'+h.configured+' configured sources returned JSON; '+h.broken+' failed. '+(h.offline?'Showing fallback browser cache.':'Snapshot age: '+Math.max(0,Math.round(h.ageHours))+'h.')+'</p></div>'+
-    statistic('Employer coverage',h.working+' / '+h.list.length+' companies',h.unconfigured+' not configured; '+h.broken+' configured sources failed.')+
+    statistic('Latest collection attempt',fmtTime(attempt?.run_time||s.run_time,'America/Chicago'),h.working===0?'No fresh snapshot. Showing previous saved data.':'At least one source succeeded.')+
+    '<div><div class="muted">Collection health</div>'+badge(h.label,h.state)+'<p class="muted">'+h.working+'/'+h.configured+' configured sources returned JSON; '+h.broken+' failed; '+h.deferred+' deferred. '+(h.offline?'Showing fallback browser cache.':'Snapshot age: '+Math.max(0,Math.round(h.ageHours))+'h.')+'</p></div>'+
+    statistic('Employer coverage',h.working+' / '+h.list.length+' companies',h.unconfigured+' not configured; '+h.broken+' configured sources failed; '+h.deferred+' deferred.')+
     statistic('Completeness review',String(h.review)+' sources', 'Exactly 40 or 0 listings; review pagination and source scope. These are not classified as request failures.')+
     '<div><div class="muted">History consistency</div>'+badge(h.consistent?'Counts agree':'Counts differ',h.consistent?'good':'bad')+'<p class="muted">'+h.rowsOpen+' open history rows vs '+esc(s.open)+' in status.json.</p></div>'+
-    '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all 25 boards were fully captured.</p>';
+    '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all tracked boards were fully captured.</p>';
   const metadata=new Map(sourceConfig.map(x=>[x.name,x]));
   $('#sources').innerHTML=h.list.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
   $('#new').innerHTML=rows.filter(r=>r.first_seen===last&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
