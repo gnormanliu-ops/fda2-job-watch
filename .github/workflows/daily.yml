@@ -68,6 +68,7 @@ jobs:
           path: |
             collect.log
             data/status.json
+            data/attempt.json
           if-no-files-found: ignore
 
   deploy:
