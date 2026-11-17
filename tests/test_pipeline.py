@@ -61,3 +61,51 @@ def test_pipeline_scripts_have_valid_python_syntax():
     for filename in ['job_watcher.py', 'commit_snapshot.py', 'issue_report.py']:
         source = (root / filename).read_text(encoding='utf-8')
         compile(source, str(root / filename), 'exec')
+
+
+def test_rate_limited_sources_are_deferred(tmp_path, monkeypatch):
+    monkeypatch.setattr(jw, 'DATA', tmp_path / 'data')
+    monkeypatch.setattr(jw, 'sources', lambda: [
+        {'name': name, 'enabled': True, 'ats': 'workday'}
+        for name in ('First', 'Second', 'Third')
+    ])
+    class Session:
+        rate_limit_stop = None
+    session = Session()
+    calls = []
+    def fail(client, source):
+        calls.append(source['name'])
+        client.rate_limit_stop = 'HTTP 429: rate limited'
+        raise jw.RateLimited(client.rate_limit_stop)
+    monkeypatch.setattr(jw, 'get_workday', fail)
+    result = jw.collect('2026-11-17', session)
+    assert calls == ['First']
+    assert [s['error_code'] for s in result] == ['rate_limited', 'deferred', 'deferred']
+    assert [s['attempted'] for s in result] == [True, False, False]
+    assert not list((jw.DATA / 'raw').glob('*/*.json.gz'))
+
+
+def test_zero_success_publishes_only_diagnostics(tmp_path, monkeypatch):
+    import commit_snapshot as cs
+    from types import SimpleNamespace
+    data = tmp_path / 'data'
+    raw = data / 'raw' / '2026-11-17'
+    raw.mkdir(parents=True)
+    current = {'run_time': '2026-11-17T12:00:00Z',
+               'sources': [{'name': 'Test', 'ok': False, 'count': 0}]}
+    previous = {'run_time': '2026-11-16T12:00:00Z', 'days_with_success': 13}
+    (data / 'status.json').write_text(json.dumps(current))
+    (data / 'history.csv').write_text('unchanged')
+    monkeypatch.setattr(cs, 'DATA', data)
+    calls = []
+    def git(*args, **kwargs):
+        calls.append(args)
+        if args[:2] == ('reset', '--hard'):
+            (data / 'status.json').write_text(json.dumps(previous))
+        return SimpleNamespace(returncode=1 if args[0]=='diff' else 0, stderr='')
+    monkeypatch.setattr(cs, 'git', git)
+    cs.publish()
+    assert json.loads((data / 'attempt.json').read_text()) == current
+    assert json.loads((data / 'status.json').read_text()) == previous
+    assert (data / 'history.csv').read_text() == 'unchanged'
+    assert [args for args in calls if args[0]=='add'] == [('add','data/attempt.json')]
