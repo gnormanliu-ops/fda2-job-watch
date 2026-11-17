@@ -1,8 +1,9 @@
 """Daily JSON ATS collection and deterministic history reconstruction."""
-import argparse,csv,gzip,json,re
+import argparse,csv,gzip,json,re,time
 from datetime import datetime,timezone
 from pathlib import Path
 import requests
+import urllib3
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 ROOT=Path(__file__).resolve().parent
@@ -12,11 +13,58 @@ ROLE=re.compile(r'\b(financial?\s+(?:planning|analyst|analytics|data)|fp\s*&\s*a
 def in_role(t):return bool(ROLE.search(t or ''))
 def slug(t):return re.sub('[^a-z0-9]+','-',t.lower()).strip('-')
 def sources():return json.loads((ROOT/'sources.json').read_text())
+class RateLimited(RuntimeError):
+    pass
+
+
+class WorkdaySession(requests.Session):
+    """One shared, paced client; stop when Workday asks us to back off."""
+    MIN_INTERVAL = 1.0
+    DEFAULT_COOLDOWN = 90.0
+    MAX_INLINE_WAIT = 180.0
+
+    def __init__(self):
+        super().__init__()
+        self.next_request = 0.0
+        self.rate_limit_stop = None
+
+    def post(self, url, **kwargs):
+        if self.rate_limit_stop:
+            raise RateLimited(self.rate_limit_stop)
+        for attempt in range(2):
+            pause = self.next_request - time.monotonic()
+            if pause > 0:
+                time.sleep(pause)
+            self.next_request = time.monotonic() + self.MIN_INTERVAL
+            response = super().post(url, **kwargs)
+            if response.status_code != 429:
+                return response
+            # Handle both delta-seconds and HTTP-date Retry-After values.
+            try:
+                delay = Retry().parse_retry_after(response.headers["Retry-After"])
+            except (KeyError, ValueError, TypeError, requests.exceptions.InvalidHeader,
+                    urllib3.exceptions.InvalidHeader):
+                delay = self.DEFAULT_COOLDOWN
+            delay = max(self.DEFAULT_COOLDOWN, delay)
+            response.close()
+            if attempt or delay > self.MAX_INLINE_WAIT:
+                self.rate_limit_stop = (
+                    f"HTTP 429: Workday rate limited; remaining requests deferred "
+                    f"to a later scheduled collection (Retry-After {delay:.0f}s)"
+                )
+                raise RateLimited(self.rate_limit_stop)
+            print(f"HTTP 429: pausing all Workday requests for {delay:.0f}s", flush=True)
+            self.next_request = time.monotonic() + delay
+        raise AssertionError("unreachable")
+
+
 def make_session():
-    session = requests.Session()
-    retry = Retry(total=3, connect=3, read=2, status=3,
-                  backoff_factor=1.5, status_forcelist=[429, 500, 502, 503, 504],
-                  allowed_methods=frozenset(['POST', 'GET']), respect_retry_after_header=True)
+    session = WorkdaySession()
+    # Never let adapter-level retries bypass the shared 429 cooldown.
+    retry = Retry(total=2, connect=2, read=1, status=0,
+                  backoff_factor=2,
+                  allowed_methods=frozenset(['POST', 'GET']),
+                  respect_retry_after_header=False, raise_on_status=False)
     session.mount('https://', HTTPAdapter(max_retries=retry))
     return session
 
@@ -56,7 +104,7 @@ def collect(day,session=None):
                     temp.unlink(missing_ok=True)
                 r.update(ok=True,count=len(raw['jobPostings']))
             except Exception as e:
-                r['error']=str(e)[:180]
+                r['error']=str(e)[:300]
                 dest.unlink(missing_ok=True)
         else:
             r['error']='Unverified source'
