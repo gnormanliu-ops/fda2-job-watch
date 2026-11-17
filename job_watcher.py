@@ -91,9 +91,15 @@ def collect(day,session=None):
     session=session or make_session();p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True);result=[]
     for s in sources():
         dest=p/(slug(s['name'])+'.json.gz')
-        r={'name':s['name'],'ok':False,'count':0}
+        r={'name':s['name'],'ok':False,'count':0,'attempted':False}
         if s.get('enabled'):
+            if getattr(session,'rate_limit_stop',None):
+                r.update(error_code='deferred',error='Deferred after Workday rate limit; no request sent')
+                dest.unlink(missing_ok=True)
+                result.append(r)
+                continue
             try:
+                r['attempted']=True
                 if s.get('ats')!='workday':raise ValueError('Adapter unavailable')
                 raw=get_workday(session,s)
                 temp=dest.with_suffix('.tmp')
@@ -105,6 +111,8 @@ def collect(day,session=None):
                 r.update(ok=True,count=len(raw['jobPostings']))
             except Exception as e:
                 r['error']=str(e)[:300]
+                if isinstance(e,RateLimited):
+                    r['error_code']='rate_limited'
                 dest.unlink(missing_ok=True)
         else:
             r['error']='Unverified source'
