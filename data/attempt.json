@@ -1,0 +1,163 @@
+{
+  "run_time": "2026-11-18T18:53:20.308083Z",
+  "sources": [
+    {
+      "name": "Boeing",
+      "ok": true,
+      "count": 40,
+      "attempted": true
+    },
+    {
+      "name": "GE Aerospace",
+      "ok": false,
+      "count": 0,
+      "attempted": true,
+      "error": "HTTP 429: Workday rate limited; remaining requests deferred to a later scheduled collection (Retry-After 90s)",
+      "error_code": "rate_limited"
+    },
+    {
+      "name": "GE Vernova",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "General Motors",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Applied Materials",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Micron Technology",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Intel",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Rockwell Automation",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "3M",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Pfizer",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Eli Lilly",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Bristol Myers Squibb",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Gilead Sciences",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Caterpillar",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Walmart",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "UPS",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Target",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "CVS Health",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Capital One",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    },
+    {
+      "name": "Mastercard",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
+    }
+  ]
+}

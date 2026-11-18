@@ -1,129 +1,168 @@
 {
-  "run_time": "2026-11-16T20:33:01.622213Z",
+  "run_time": "2026-11-18T18:53:20.308083Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 13,
+  "days_with_success": 14,
   "open": 8425,
-  "new_today": 3,
-  "removed_today": 3,
+  "new_today": 40,
+  "removed_today": 40,
   "sources": [
     {
       "name": "Boeing",
-      "ok": false,
-      "count": 0,
-      "error": "HTTPSConnectionPool(host='boeing.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/boeing/External_Careers/jobs (Caused by ResponseError('too many 429 err"
+      "ok": true,
+      "count": 40,
+      "attempted": true
     },
     {
       "name": "GE Aerospace",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='geaerospace.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/geaerospace/GE_ExternalSite/jobs (Caused by ResponseError('too man"
+      "attempted": true,
+      "error": "HTTP 429: Workday rate limited; remaining requests deferred to a later scheduled collection (Retry-After 90s)",
+      "error_code": "rate_limited"
     },
     {
       "name": "GE Vernova",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='gevernova.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/gevernova/Vernova_ExternalSite/jobs (Caused by ResponseError('too ma"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "General Motors",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='generalmotors.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/generalmotors/Careers_GM/jobs (Caused by ResponseError('too many"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Applied Materials",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='amat.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/amat/External/jobs (Caused by ResponseError('too many 429 error responses"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Micron Technology",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='micron.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/micron/External/jobs (Caused by ResponseError('too many 429 error respo"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Intel",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='intel.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/intel/External/jobs (Caused by ResponseError('too many 429 error respons"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Rockwell Automation",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='rockwellautomation.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/rockwellautomation/External_Rockwell_Automation/jobs (Cause"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "3M",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='3m.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/3m/Search/jobs (Caused by ResponseError('too many 429 error responses'))"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Pfizer",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='pfizer.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/pfizer/PfizerCareers/jobs (Caused by ResponseError('too many 429 error "
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Eli Lilly",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='lilly.wd115.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/lilly/LLY/jobs (Caused by ResponseError('too many 429 error responses'"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Bristol Myers Squibb",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='bristolmyerssquibb.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/bristolmyerssquibb/BMS/jobs (Caused by ResponseError('too m"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Gilead Sciences",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='gilead.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/gilead/gileadcareers/jobs (Caused by ResponseError('too many 429 error "
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Caterpillar",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='cat.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/cat/CaterpillarCareers/jobs (Caused by ResponseError('too many 429 error r"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Walmart",
-      "ok": true,
-      "count": 40
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "UPS",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='hcmportal.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/hcmportal/Search/jobs (Caused by ResponseError('too many 429 error r"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Target",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='target.wd5.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/target/targetcareers/jobs (Caused by ResponseError('too many 429 error "
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "CVS Health",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='cvshealth.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/cvshealth/CVS_Health_Careers/jobs (Caused by ResponseError('too many"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Capital One",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='capitalone.wd12.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/capitalone/Capital_One/jobs (Caused by ResponseError('too many 429"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "Mastercard",
       "ok": false,
       "count": 0,
-      "error": "HTTPSConnectionPool(host='mastercard.wd1.myworkdayjobs.com', port=443): Max retries exceeded with url: /wday/cxs/mastercard/CorporateCareers/jobs (Caused by ResponseError('too many"
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     }
   ]
 }
