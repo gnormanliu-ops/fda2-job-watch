@@ -201,5 +201,50 @@
     "host": "mastercard.wd1.myworkdayjobs.com",
     "tenant": "mastercard",
     "site": "CorporateCareers"
+  },
+  {
+    "name": "AECOM",
+    "employer": "AECOM",
+    "ticker": "ACM",
+    "ats": "smartrecruiters",
+    "board": "AECOM",
+    "enabled": true,
+    "candidate": true
+  },
+  {
+    "name": "Western Digital",
+    "employer": "Western Digital",
+    "ticker": "WDC",
+    "ats": "smartrecruiters",
+    "board": "WesternDigital",
+    "enabled": true,
+    "candidate": true
+  },
+  {
+    "name": "Sandisk",
+    "employer": "Sandisk",
+    "ticker": "SNDK",
+    "ats": "smartrecruiters",
+    "board": "Sandisk",
+    "enabled": true,
+    "candidate": true
+  },
+  {
+    "name": "DoorDash",
+    "employer": "DoorDash",
+    "ticker": "DASH",
+    "ats": "greenhouse",
+    "board": "doordashusa",
+    "enabled": true,
+    "candidate": true
+  },
+  {
+    "name": "Robinhood",
+    "employer": "Robinhood",
+    "ticker": "HOOD",
+    "ats": "greenhouse",
+    "board": "robinhood",
+    "enabled": true,
+    "candidate": true
   }
 ]
