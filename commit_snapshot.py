@@ -81,7 +81,9 @@ def publish(max_attempts=5):
                 saved = target / (name + ".json.gz")
                 if saved.is_file():
                     with gzip.open(saved, "rt", encoding="utf8") as fh:
-                        jobs = json.load(fh).get("jobPostings", [])
+                        raw = json.load(fh)
+                        config = next(x for x in watcher.sources() if watcher.slug(x["name"]) == name)
+                        jobs = watcher.raw_jobs(config, raw)
                     source.update(ok=True, count=len(jobs))
                     source.pop("error", None)
                     source.pop("error_code", None)
