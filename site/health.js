@@ -32,14 +32,21 @@ function healthSummary(status,rows,attempt){
  const consistent=rowsOpen===Number(status.open);
  const offline=Object.values(window.jobDataOrigin||{}).some(x=>x==='cache');
  let state='good',label='Collection operational';
- if(broken.length){state='warn';label='Collection degraded'}
+ if(broken.length||deferred){state='warn';label='Collection degraded'}
  if(!working.length||ageHours>36||!consistent){state='bad';label=!consistent?'Data files disagree':ageHours>36?'Data update overdue':'No working sources'}
- if(!working.length&&list.some(s=>s.error_code==='rate_limited')){state='bad';label='Workday rate limited (429)'}
+ if(!working.length&&list.some(s=>s.error_code==='rate_limited')){state='bad';label='ATS rate limited (429)'}
  if(offline&&state!=='bad'){state='warn';label='Offline / cached data'}
  return {state,label,list,configured:configured.length,working:working.length,broken:broken.length,deferred,unconfigured,review,ageHours,consistent,rowsOpen,offline};
 }
 function boardDetails(config){
- if(!config||!config.enabled||config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
+ if(!config||!config.enabled)return {board:'—',scope:'Not configured'};
+ if(['greenhouse','smartrecruiters'].includes(config.ats)&&/^[a-z0-9_-]+$/i.test(config.board||'')){
+  const gh=config.ats==='greenhouse',token=encodeURIComponent(config.board);
+  const board=gh?'https://job-boards.greenhouse.io/'+token:'https://jobs.smartrecruiters.com/'+token;
+  const api=gh?'https://boards-api.greenhouse.io/v1/boards/'+token+'/jobs':'https://api.smartrecruiters.com/v1/companies/'+token+'/postings';
+  return {board:(gh?'Greenhouse':'SmartRecruiters')+' · <a href="'+esc(board)+'" target="_blank" rel="noopener noreferrer">Job board</a><details class="api-detail"><summary>JSON API (GET)</summary><code>'+esc(api)+'</code></details>',scope:'All listed postings'+(config.candidate?' · candidate feed':'')};
+ }
+ if(config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
  // Construct links exclusively from our version-controlled source registry.
  if(!/^[a-z0-9.-]+\.myworkdayjobs\.com$/i.test(config.host))return {board:'Invalid host',scope:'Review source config'};
  const base='https://'+config.host;
@@ -71,7 +78,8 @@ async function renderDashboard(){
     '<div><div class="muted">History consistency</div>'+badge(h.consistent?'Counts agree':'Counts differ',h.consistent?'good':'bad')+'<p class="muted">'+h.rowsOpen+' open history rows vs '+esc(s.open)+' in status.json.</p></div>'+
     '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all tracked boards were fully captured.</p>';
   const metadata=new Map(sourceConfig.map(x=>[x.name,x]));
-  $('#sources').innerHTML=h.list.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
+  const displayed=h.list.concat(sourceConfig.filter(c=>!h.list.some(x=>x.name===c.name)).map(c=>({name:c.name,ok:false,count:0,error:'Awaiting first scheduled collection',error_code:'deferred'})));
+  $('#sources').innerHTML=displayed.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
   $('#new').innerHTML=rows.filter(r=>r.first_seen===last&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
   $('#removed').innerHTML=rows.filter(r=>r.removed_date===last).map(r=>row(r)).join('')||'<tr><td colspan="5">No removed postings detected.</td></tr>';
  }catch(e){
