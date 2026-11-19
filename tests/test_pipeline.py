@@ -109,3 +109,35 @@ def test_zero_success_publishes_only_diagnostics(tmp_path, monkeypatch):
     assert json.loads((data / 'status.json').read_text()) == previous
     assert (data / 'history.csv').read_text() == 'unchanged'
     assert [args for args in calls if args[0]=='add'] == [('add','data/attempt.json')]
+
+
+def test_provider_isolation(tmp_path, monkeypatch):
+    monkeypatch.setattr(jw,'DATA',tmp_path/'data')
+    cfg=[{'name':'W','employer':'W','ats':'workday','enabled':True},
+         {'name':'G','employer':'G','ats':'greenhouse','enabled':True},
+         {'name':'S','employer':'S','ats':'smartrecruiters','enabled':True}]
+    monkeypatch.setattr(jw,'sources',lambda:cfg)
+    class Client:
+        rate_limit_stop=None
+    clients={}
+    def make(provider='workday'):
+        clients[provider]=Client()
+        return clients[provider]
+    monkeypatch.setattr(jw,'make_session',make)
+    def blocked(client,source):
+        client.rate_limit_stop='HTTP 429'
+        raise jw.RateLimited('HTTP 429')
+    monkeypatch.setattr(jw,'get_greenhouse',blocked)
+    monkeypatch.setattr(jw,'get_smartrecruiters',lambda c,s:{'pages':[{'content':[{'id':'1','name':'Analyst'}]}]})
+    monkeypatch.setattr(jw,'get_workday',lambda c,s:{'jobPostings':[{'title':'Analyst','externalPath':'/job/1'}]})
+    result={r['name']:r for r in jw.collect('2026-11-19')}
+    assert not result['G']['ok'] and result['W']['ok'] and result['S']['ok']
+    assert len(clients)==3
+
+def test_public_ats_normalization():
+    g={'name':'G','employer':'G','ats':'greenhouse','board':'g'}
+    raw={'jobs':[{'id':123,'title':'Financial Analyst','location':{'name':'Chicago'},'absolute_url':'https://example.com/job'}]}
+    assert jw.normalize(g,raw)[0]['posting_id']=='g:123'
+    s={'name':'S','employer':'S','ats':'smartrecruiters','board':'S'}
+    raw={'pages':[{'content':[{'id':'abc','name':'Cost Analyst','releasedDate':'2026-11-19T12:00:00Z','location':{'city':'Dallas'}}]}]}
+    assert jw.normalize(s,raw)[0]['posted_date']=='2026-11-19'
