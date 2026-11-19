@@ -58,9 +58,28 @@ function badge(label,kind){return '<span class="health-pill health-'+kind+'">'+e
 function statistic(label,value,detail){
  return '<div><div class="muted">'+esc(label)+'</div><strong>'+esc(value)+'</strong><p class="muted">'+esc(detail)+'</p></div>';
 }
+function backupCell(config,report){
+ if(!config?.fallback)return 'Not configured';
+ const b=report?.secondary||{},c=report?.cache||{};
+ const labels={standby:'Standby',authorization_required:'API authorization required',secondary_available:'Secondary results available',no_verified_match:'No verified match',unavailable:'Secondary unavailable',deferred:'Secondary deferred'};
+ const cache=c.date?'Saved '+esc(c.date)+' · '+esc(c.count)+' jobs':'No saved snapshot';
+ return esc(labels[b.state]||'Awaiting backup check')+'<p class="muted">'+cache+'</p>';
+}
+function showBackups(report){
+ const el=$('#backup-list');if(!el)return;
+ if(!report){el.textContent='No backup report available yet.';return;}
+ const fresh=Date.now()-Date.parse(report.run_time)<48*3600000;
+ const list=(report.sources||[]).flatMap(s=>(s.secondary?.jobs||[]).map(j=>({...j,employer:s.name})));
+ let html='<p>Backup report: '+esc(fmtTime(report.run_time,'America/Chicago'))+' · '+(fresh?'Recent report':'Historical report; verify job availability')+'</p>';
+ html+=list.length?'<div class="tablewrap"><table><thead><tr><th>Employer</th><th>Title</th><th>Last verified</th><th>Link</th></tr></thead><tbody>'+list.map(j=>'<tr><td>'+esc(j.employer)+'</td><td>'+esc(j.title)+'</td><td>'+esc(j.last_verified_at)+'</td><td>'+(/^https:\/\//i.test(j.url)?'<a rel="noopener noreferrer" target="_blank" href="'+esc(j.url)+'">View posting</a>':'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p>No authorized secondary listings available.</p>';
+ html+='<p>'+esc(report.attribution||'')+'</p><p><a href="https://headcountlabs.com/license/" target="_blank" rel="noopener noreferrer">Secondary data license</a></p>';
+ el.innerHTML=html;
+}
 async function renderDashboard(){
  try {
-  const [s,rows,sourceConfig,a]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[]),load('attempt.json').catch(()=>null)]);
+  const [s,rows,sourceConfig,a,b]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[]),load('attempt.json').catch(()=>null),load('backup_status.json').catch(()=>null)]);
+  const backupMap=new Map((b?.sources||[]).map(x=>[x.name,x]));
+  showBackups(b);
   const attempt=a&&Date.parse(a.run_time)>=Date.parse(s.run_time)?a:null;
   const h=healthSummary(s,rows,attempt),last=(s.run_time||'').slice(0,10);
   $('#run').textContent='Last saved snapshot: '+fmtTime(s.run_time,'America/Chicago')+' ('+fmtTime(s.run_time,'UTC')+')';
@@ -79,7 +98,7 @@ async function renderDashboard(){
     '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all tracked boards were fully captured.</p>';
   const metadata=new Map(sourceConfig.map(x=>[x.name,x]));
   const displayed=h.list.concat(sourceConfig.filter(c=>!h.list.some(x=>x.name===c.name)).map(c=>({name:c.name,ok:false,count:0,error:'Awaiting first scheduled collection',error_code:'deferred'})));
-  $('#sources').innerHTML=displayed.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
+  $('#sources').innerHTML=displayed.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+backupCell(metadata.get(x.name),backupMap.get(x.name))+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="7">No status report available</td></tr>';
   $('#new').innerHTML=rows.filter(r=>r.first_seen===last&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
   $('#removed').innerHTML=rows.filter(r=>r.removed_date===last).map(r=>row(r)).join('')||'<tr><td colspan="5">No removed postings detected.</td></tr>';
  }catch(e){
