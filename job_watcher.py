@@ -18,17 +18,18 @@ class RateLimited(RuntimeError):
 
 
 class WorkdaySession(requests.Session):
-    """One shared, paced client; stop when Workday asks us to back off."""
+    """One paced client per ATS provider; respect its cooldown independently."""
     MIN_INTERVAL = 1.0
     DEFAULT_COOLDOWN = 90.0
     MAX_INLINE_WAIT = 180.0
 
-    def __init__(self):
+    def __init__(self, provider="workday"):
         super().__init__()
+        self.provider = provider
         self.next_request = 0.0
         self.rate_limit_stop = None
 
-    def post(self, url, **kwargs):
+    def request(self, method, url, **kwargs):
         if self.rate_limit_stop:
             raise RateLimited(self.rate_limit_stop)
         for attempt in range(2):
@@ -36,7 +37,7 @@ class WorkdaySession(requests.Session):
             if pause > 0:
                 time.sleep(pause)
             self.next_request = time.monotonic() + self.MIN_INTERVAL
-            response = super().post(url, **kwargs)
+            response = super().request(method, url, **kwargs)
             if response.status_code != 429:
                 return response
             # Handle both delta-seconds and HTTP-date Retry-After values.
@@ -49,17 +50,17 @@ class WorkdaySession(requests.Session):
             response.close()
             if attempt or delay > self.MAX_INLINE_WAIT:
                 self.rate_limit_stop = (
-                    f"HTTP 429: Workday rate limited; remaining requests deferred "
+                    f"HTTP 429: {self.provider} rate limited; remaining requests for this provider deferred "
                     f"to a later scheduled collection (Retry-After {delay:.0f}s)"
                 )
                 raise RateLimited(self.rate_limit_stop)
-            print(f"HTTP 429: pausing all Workday requests for {delay:.0f}s", flush=True)
+            print(f"HTTP 429: pausing {self.provider} requests for {delay:.0f}s", flush=True)
             self.next_request = time.monotonic() + delay
         raise AssertionError("unreachable")
 
 
-def make_session():
-    session = WorkdaySession()
+def make_session(provider="workday"):
+    session = WorkdaySession(provider)
     # Never let adapter-level retries bypass the shared 429 cooldown.
     retry = Retry(total=2, connect=2, read=1, status=0,
                   backoff_factor=2,
@@ -87,39 +88,119 @@ def get_workday(session,s):
         offset+=len(batch)
         if offset>10000:raise ValueError('Unexpected pagination beyond 10000 postings')
     return {'jobPostings':jobs,'total':len(jobs)}
+def get_greenhouse(session,s):
+    url=f"https://boards-api.greenhouse.io/v1/boards/{s['board']}/jobs"
+    response=session.get(url,headers={'Accept':'application/json','User-Agent':'FDA-Job-Watcher/1.0'},timeout=35)
+    response.raise_for_status()
+    payload=response.json()
+    jobs=payload.get('jobs')
+    if not isinstance(jobs,list):raise ValueError('Missing Greenhouse jobs array')
+    total=payload.get('meta',{}).get('total',len(jobs))
+    if not isinstance(total,int) or total!=len(jobs):raise ValueError('Incomplete Greenhouse response')
+    if any(not isinstance(j,dict) or not j.get('id') or not j.get('title') or not j.get('absolute_url') for j in jobs):
+        raise ValueError('Invalid Greenhouse posting')
+    if len({str(j['id']) for j in jobs})!=len(jobs):raise ValueError('Duplicate Greenhouse posting IDs')
+    return payload
+
+
+def get_smartrecruiters(session,s):
+    url=f"https://api.smartrecruiters.com/v1/companies/{s['board']}/postings"
+    pages=[];jobs=[];offset=0;seen=set();expected=None
+    while True:
+        response=session.get(url,params={'limit':100,'offset':offset},headers={'Accept':'application/json','User-Agent':'FDA-Job-Watcher/1.0'},timeout=35)
+        response.raise_for_status()
+        payload=response.json()
+        batch=payload.get('content');total=payload.get('totalFound')
+        if not isinstance(batch,list) or not isinstance(total,int) or total<0:
+            raise ValueError('Invalid SmartRecruiters response')
+        if expected is None:expected=total
+        if total!=expected:raise ValueError('SmartRecruiters total changed during paging')
+        if total>10000:raise ValueError('SmartRecruiters board exceeds safety limit')
+        if payload.get('offset',offset)!=offset:raise ValueError('Unexpected SmartRecruiters offset')
+        for job in batch:
+            if not isinstance(job,dict) or not job.get('id') or not job.get('name'):
+                raise ValueError('Invalid SmartRecruiters posting')
+            key=str(job['id'])
+            if key in seen:raise ValueError('Repeated SmartRecruiters posting ID')
+            seen.add(key)
+        pages.append(payload);jobs.extend(batch)
+        if len(jobs)==total:break
+        if not batch or len(jobs)>total:raise ValueError('Incomplete SmartRecruiters pagination')
+        offset+=len(batch)
+    return {'pages':pages,'totalFound':expected}
+
+
+def raw_jobs(s,raw):
+    provider=s.get('ats','workday')
+    if provider=='greenhouse':return raw['jobs']
+    if provider=='smartrecruiters':return [job for page in raw['pages'] for job in page['content']]
+    if provider=='workday':return raw['jobPostings']
+    raise ValueError('Unknown ATS: '+provider)
+
+
 def collect(day,session=None):
-    session=session or make_session();p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True);result=[]
-    for s in sources():
+    p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True)
+    result=[];clients={}
+    adapters={'workday':get_workday,'greenhouse':get_greenhouse,'smartrecruiters':get_smartrecruiters}
+    # New public GET APIs are collected first; Workday remains a separate circuit.
+    priority={'greenhouse':0,'smartrecruiters':1,'workday':2}
+    for s in sorted(sources(),key=lambda x:priority.get(x.get('ats'),3)):
+        provider=s.get('ats','workday')
         dest=p/(slug(s['name'])+'.json.gz')
-        r={'name':s['name'],'ok':False,'count':0,'attempted':False}
-        if s.get('enabled'):
-            if getattr(session,'rate_limit_stop',None):
-                r.update(error_code='deferred',error='Deferred after Workday rate limit; no request sent')
-                dest.unlink(missing_ok=True)
-                result.append(r)
-                continue
+        r={'name':s['name'],'ats':provider,'ok':False,'count':0,'attempted':False}
+        if not s.get('enabled'):
+            r['error']='Unverified source';result.append(r);continue
+        if provider not in adapters:
+            r['error']='Adapter unavailable';result.append(r);continue
+        if provider not in clients:
+            clients[provider]=session if session is not None and provider=='workday' else make_session(provider)
+        client=clients[provider]
+        if getattr(client,'rate_limit_stop',None):
+            r.update(error_code='deferred',error=f'Deferred after {provider} rate limit; no request sent')
+            result.append(r);continue
+        try:
+            r['attempted']=True
+            raw=adapters[provider](client,s)
+            count=len(raw_jobs(s,raw))
+            if s.get('candidate') and count==0 and not any((DATA/'raw').glob('*/'+dest.name)):
+                raise ValueError('Unvalidated candidate returned zero jobs; no initial snapshot saved')
+            temp=dest.with_suffix('.tmp')
             try:
-                r['attempted']=True
-                if s.get('ats')!='workday':raise ValueError('Adapter unavailable')
-                raw=get_workday(session,s)
-                temp=dest.with_suffix('.tmp')
-                try:
-                    with gzip.open(temp,'wt',encoding='utf8') as f:json.dump(raw,f)
-                    temp.replace(dest)
-                finally:
-                    temp.unlink(missing_ok=True)
-                r.update(ok=True,count=len(raw['jobPostings']))
-            except Exception as e:
-                r['error']=str(e)[:300]
-                if isinstance(e,RateLimited):
-                    r['error_code']='rate_limited'
-                dest.unlink(missing_ok=True)
-        else:
-            r['error']='Unverified source'
-            dest.unlink(missing_ok=True)
+                with gzip.open(temp,'wt',encoding='utf8') as fh:json.dump(raw,fh)
+                temp.replace(dest)
+            finally:
+                temp.unlink(missing_ok=True)
+            r.update(ok=True,count=count)
+        except Exception as e:
+            r['error']=str(e)[:300]
+            if isinstance(e,RateLimited):r['error_code']='rate_limited'
         result.append(r)
     return result
+
+
 def normalize(s,raw):
+    result=[]
+    provider=s.get('ats','workday')
+    if provider!='workday':
+        for job in raw_jobs(s,raw):
+            ident=str(job['id'])
+            loc=job.get('location') or {}
+            if provider=='greenhouse':
+                title=job.get('title','')
+                location=loc.get('name','')
+                url=job.get('absolute_url','')
+                posted='' # updated_at is not the original published date
+                department=', '.join(d.get('name','') for d in job.get('departments',[]) if isinstance(d,dict))
+            else:
+                title=job.get('name','')
+                location=', '.join(str(loc[k]) for k in ('city','region','country') if loc.get(k))
+                url=f"https://jobs.smartrecruiters.com/{s['board']}/{ident}"
+                posted=str(job.get('releasedDate') or '')[:10]
+                department=(job.get('department') or {}).get('label','')
+            result.append(dict(posting_id=slug(s['name'])+':'+ident,source=slug(s['name']),source_id=ident,employer=s['employer'],
+                title=title,location=location,department=department,posted_date=posted if re.fullmatch(r'\d{4}-\d{2}-\d{2}',posted) else '',
+                url=url if url.startswith('https://') else '',in_role=str(in_role(title)).lower()))
+        return result
     result=[]
     for p in raw.get('jobPostings',[]):
         ext=str(p.get('externalPath') or '')
