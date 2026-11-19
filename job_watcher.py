@@ -233,7 +233,11 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('command',choices=['run','build']);a=p.parse_args()
     now=datetime.now(timezone.utc);today=now.date().isoformat()
     old=DATA/'status.json';results=json.loads(old.read_text()).get('sources',[]) if old.exists() else []
-    if a.command=='run':results=collect(today)
+    if a.command=='run':
+        results=collect(today)
+        from backup_sources import collect_backups
+        backups=collect_backups(DATA,sources(),results,today,slug,make_session)
+        (DATA/'backup_status.json').write_text(json.dumps(backups,indent=2)+'\n')
     rows,days=build()
     stat=dict(run_time=now.isoformat().replace('+00:00','Z'),first_run_date=days[0] if days else '',days_with_success=len(days),open=sum(r['status']=='open' for r in rows),new_today=sum(r['first_seen']==today and r['first_run']=='false' for r in rows),removed_today=sum(r['removed_date']==today for r in rows),sources=results)
     (DATA/'status.json').write_text(json.dumps(stat,indent=2)+'\n')
