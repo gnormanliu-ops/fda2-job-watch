@@ -1,10 +1,10 @@
 {
-  "run_time": "2026-11-19T19:02:13.789571Z",
+  "run_time": "2026-11-20T18:38:34.502453Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 15,
+  "days_with_success": 16,
   "open": 8425,
-  "new_today": 40,
-  "removed_today": 40,
+  "new_today": 26,
+  "removed_today": 38,
   "sources": [
     {
       "name": "Boeing",
