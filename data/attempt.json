@@ -1,19 +1,21 @@
 {
-  "run_time": "2026-11-20T18:38:34.502453Z",
+  "run_time": "2026-11-21T17:36:57.742273Z",
   "sources": [
     {
       "name": "Boeing",
-      "ok": true,
-      "count": 40,
-      "attempted": true
-    },
-    {
-      "name": "GE Aerospace",
       "ok": false,
       "count": 0,
       "attempted": true,
       "error": "HTTP 429: Workday rate limited; remaining requests deferred to a later scheduled collection (Retry-After 90s)",
       "error_code": "rate_limited"
+    },
+    {
+      "name": "GE Aerospace",
+      "ok": false,
+      "count": 0,
+      "attempted": false,
+      "error_code": "deferred",
+      "error": "Deferred after Workday rate limit; no request sent"
     },
     {
       "name": "GE Vernova",
