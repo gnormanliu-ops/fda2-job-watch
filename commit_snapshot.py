@@ -38,6 +38,8 @@ def publish(max_attempts=5):
     if successful and not raw_files:
         raise RuntimeError("Successful collection has no raw snapshot files")
     attempt_path = DATA / "attempt.json"
+    backup_path = DATA / "backup_status.json"
+    backup_report = backup_path.read_bytes() if backup_path.exists() else None
     attempt = dict(run_time=collection["run_time"], sources=collection["sources"])
 
     # Preserve the current run before synchronizing with the remote branch.
@@ -53,6 +55,9 @@ def publish(max_attempts=5):
             git("reset", "--hard", "origin/main")
             # Record the actual attempt independently from published snapshot statistics.
             attempt_path.write_text(json.dumps(attempt, indent=2) + "\n")
+            if backup_report is not None:
+                backup_path.write_bytes(backup_report)
+                git("add", "data/backup_status.json")
             if not successful:
                 # Never replace the last successful history or count a failed day.
                 git("add", "data/attempt.json")
@@ -81,7 +86,9 @@ def publish(max_attempts=5):
                 saved = target / (name + ".json.gz")
                 if saved.is_file():
                     with gzip.open(saved, "rt", encoding="utf8") as fh:
-                        jobs = json.load(fh).get("jobPostings", [])
+                        raw = json.load(fh)
+                        config = next(x for x in watcher.sources() if watcher.slug(x["name"]) == name)
+                        jobs = watcher.raw_jobs(config, raw)
                     source.update(ok=True, count=len(jobs))
                     source.pop("error", None)
                     source.pop("error_code", None)

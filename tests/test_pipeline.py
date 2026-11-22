@@ -109,3 +109,75 @@ def test_zero_success_publishes_only_diagnostics(tmp_path, monkeypatch):
     assert json.loads((data / 'status.json').read_text()) == previous
     assert (data / 'history.csv').read_text() == 'unchanged'
     assert [args for args in calls if args[0]=='add'] == [('add','data/attempt.json')]
+
+
+def test_provider_isolation(tmp_path, monkeypatch):
+    monkeypatch.setattr(jw,'DATA',tmp_path/'data')
+    cfg=[{'name':'W','employer':'W','ats':'workday','enabled':True},
+         {'name':'G','employer':'G','ats':'greenhouse','enabled':True},
+         {'name':'S','employer':'S','ats':'smartrecruiters','enabled':True}]
+    monkeypatch.setattr(jw,'sources',lambda:cfg)
+    class Client:
+        rate_limit_stop=None
+    clients={}
+    def make(provider='workday'):
+        clients[provider]=Client()
+        return clients[provider]
+    monkeypatch.setattr(jw,'make_session',make)
+    def blocked(client,source):
+        client.rate_limit_stop='HTTP 429'
+        raise jw.RateLimited('HTTP 429')
+    monkeypatch.setattr(jw,'get_greenhouse',blocked)
+    monkeypatch.setattr(jw,'get_smartrecruiters',lambda c,s:{'pages':[{'content':[{'id':'1','name':'Analyst'}]}]})
+    monkeypatch.setattr(jw,'get_workday',lambda c,s:{'jobPostings':[{'title':'Analyst','externalPath':'/job/1'}]})
+    result={r['name']:r for r in jw.collect('2026-11-19')}
+    assert not result['G']['ok'] and result['W']['ok'] and result['S']['ok']
+    assert len(clients)==3
+
+def test_public_ats_normalization():
+    g={'name':'G','employer':'G','ats':'greenhouse','board':'g'}
+    raw={'jobs':[{'id':123,'title':'Financial Analyst','location':{'name':'Chicago'},'absolute_url':'https://example.com/job'}]}
+    assert jw.normalize(g,raw)[0]['posting_id']=='g:123'
+    s={'name':'S','employer':'S','ats':'smartrecruiters','board':'S'}
+    raw={'pages':[{'content':[{'id':'abc','name':'Cost Analyst','releasedDate':'2026-11-19T12:00:00Z','location':{'city':'Dallas'}}]}]}
+    assert jw.normalize(s,raw)[0]['posted_date']=='2026-11-19'
+
+
+def test_every_employer_has_fallback_and_isolation_config():
+    configs=jw.sources()
+    assert len(configs)>=20
+    assert len({c['name'] for c in configs})==len(configs)
+    assert all(c.get('fallback',{}).get('provider')=='headcount' for c in configs)
+    assert all(c['fallback'].get('cache')=='last_successful_snapshot' for c in configs)
+    assert all(c['fallback'].get('requires_authorization') is True for c in configs)
+    assert {'workday','greenhouse','smartrecruiters'}<=set(c['ats'] for c in configs)
+
+def test_smartrecruiters_incomplete_page_refused():
+    class Response:
+        def raise_for_status(self): pass
+        def json(self):return {'content':[],'totalFound':1,'offset':0}
+    class Session:
+        def get(self,*args,**kwargs):return Response()
+    import pytest
+    with pytest.raises(ValueError,match='Incomplete'):
+        jw.get_smartrecruiters(Session(),{'board':'Example'})
+
+def test_backups_never_count_as_fresh_snapshots(tmp_path):
+    import backup_sources as backup
+    root=tmp_path/'data'
+    root.mkdir()
+    configs=[{'name':'Example','employer':'Example','ticker':'EX',
+              'ats':'workday','fallback':{'company_query':'Example'}}]
+    statuses=[{'name':'Example','ok':False,'count':0}]
+    import os
+    key=os.environ.pop('HEADCOUNT_API_KEY',None)
+    enabled=os.environ.pop('ENABLE_LICENSED_BACKUP',None)
+    try:
+        r=backup.collect_backups(root,configs,statuses,'2026-11-22',jw.slug,
+                                 lambda provider: (_ for _ in ()).throw(AssertionError('network called')))
+        assert r['sources'][0]['secondary']['state']=='authorization_required'
+        assert r['sources'][0]['cache']['state']=='no_snapshot'
+        assert not list(root.glob('raw/*/*.json.gz'))
+    finally:
+        if key is not None:os.environ['HEADCOUNT_API_KEY']=key
+        if enabled is not None:os.environ['ENABLE_LICENSED_BACKUP']=enabled

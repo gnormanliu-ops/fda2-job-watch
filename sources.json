@@ -7,7 +7,15 @@
     "tenant": "boeing",
     "site": "External_Careers",
     "host": "boeing.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Boeing",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "GE Aerospace",
@@ -17,7 +25,15 @@
     "enabled": true,
     "host": "geaerospace.wd5.myworkdayjobs.com",
     "tenant": "geaerospace",
-    "site": "GE_ExternalSite"
+    "site": "GE_ExternalSite",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "GE Aerospace",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "GE Vernova",
@@ -27,7 +43,15 @@
     "tenant": "gevernova",
     "site": "Vernova_ExternalSite",
     "host": "gevernova.wd5.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "GE Vernova",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "General Motors",
@@ -37,7 +61,15 @@
     "tenant": "generalmotors",
     "site": "Careers_GM",
     "host": "generalmotors.wd5.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "General Motors",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Applied Materials",
@@ -47,7 +79,15 @@
     "tenant": "amat",
     "site": "External",
     "host": "amat.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Applied Materials",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Micron Technology",
@@ -57,7 +97,15 @@
     "tenant": "micron",
     "site": "External",
     "host": "micron.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Micron Technology",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Intel",
@@ -67,7 +115,15 @@
     "tenant": "intel",
     "site": "External",
     "host": "intel.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Intel",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Rockwell Automation",
@@ -77,7 +133,15 @@
     "tenant": "rockwellautomation",
     "site": "External_Rockwell_Automation",
     "host": "rockwellautomation.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Rockwell Automation",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "3M",
@@ -87,7 +151,15 @@
     "tenant": "3m",
     "site": "Search",
     "host": "3m.wd1.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "3M",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Pfizer",
@@ -97,7 +169,15 @@
     "enabled": true,
     "host": "pfizer.wd1.myworkdayjobs.com",
     "tenant": "pfizer",
-    "site": "PfizerCareers"
+    "site": "PfizerCareers",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Pfizer",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Eli Lilly",
@@ -107,7 +187,15 @@
     "enabled": true,
     "host": "lilly.wd115.myworkdayjobs.com",
     "tenant": "lilly",
-    "site": "LLY"
+    "site": "LLY",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Eli Lilly",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Bristol Myers Squibb",
@@ -117,7 +205,15 @@
     "enabled": true,
     "host": "bristolmyerssquibb.wd5.myworkdayjobs.com",
     "tenant": "bristolmyerssquibb",
-    "site": "BMS"
+    "site": "BMS",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Bristol Myers Squibb",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Gilead Sciences",
@@ -127,7 +223,15 @@
     "enabled": true,
     "host": "gilead.wd1.myworkdayjobs.com",
     "tenant": "gilead",
-    "site": "gileadcareers"
+    "site": "gileadcareers",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Gilead Sciences",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Caterpillar",
@@ -137,7 +241,15 @@
     "enabled": true,
     "host": "cat.wd5.myworkdayjobs.com",
     "tenant": "cat",
-    "site": "CaterpillarCareers"
+    "site": "CaterpillarCareers",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Caterpillar",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Walmart",
@@ -148,7 +260,15 @@
     "site": "WalmartExternal",
     "host": "walmart.wd504.myworkdayjobs.com",
     "enabled": true,
-    "search_term": "analyst"
+    "search_term": "analyst",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Walmart",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "UPS",
@@ -158,7 +278,15 @@
     "enabled": true,
     "host": "hcmportal.wd5.myworkdayjobs.com",
     "tenant": "hcmportal",
-    "site": "Search"
+    "site": "Search",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "UPS",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Target",
@@ -169,7 +297,15 @@
     "host": "target.wd5.myworkdayjobs.com",
     "tenant": "target",
     "site": "targetcareers",
-    "search_term": "analyst"
+    "search_term": "analyst",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Target",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "CVS Health",
@@ -180,7 +316,15 @@
     "host": "cvshealth.wd1.myworkdayjobs.com",
     "tenant": "cvshealth",
     "site": "CVS_Health_Careers",
-    "search_term": "analyst"
+    "search_term": "analyst",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "CVS Health",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Capital One",
@@ -190,7 +334,15 @@
     "tenant": "capitalone",
     "site": "Capital_One",
     "host": "capitalone.wd12.myworkdayjobs.com",
-    "enabled": true
+    "enabled": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Capital One",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   },
   {
     "name": "Mastercard",
@@ -200,6 +352,99 @@
     "enabled": true,
     "host": "mastercard.wd1.myworkdayjobs.com",
     "tenant": "mastercard",
-    "site": "CorporateCareers"
+    "site": "CorporateCareers",
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Mastercard",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
+  },
+  {
+    "name": "AECOM",
+    "employer": "AECOM",
+    "ticker": "ACM",
+    "ats": "smartrecruiters",
+    "board": "AECOM2",
+    "enabled": true,
+    "candidate": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "AECOM",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
+  },
+  {
+    "name": "Western Digital",
+    "employer": "Western Digital",
+    "ticker": "WDC",
+    "ats": "smartrecruiters",
+    "board": "WesternDigital",
+    "enabled": true,
+    "candidate": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Western Digital",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
+  },
+  {
+    "name": "Sandisk",
+    "employer": "Sandisk",
+    "ticker": "SNDK",
+    "ats": "smartrecruiters",
+    "board": "Sandisk",
+    "enabled": true,
+    "candidate": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Sandisk",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
+  },
+  {
+    "name": "DoorDash",
+    "employer": "DoorDash",
+    "ticker": "DASH",
+    "ats": "greenhouse",
+    "board": "doordashusa",
+    "enabled": true,
+    "candidate": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "DoorDash",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
+  },
+  {
+    "name": "Robinhood",
+    "employer": "Robinhood",
+    "ticker": "HOOD",
+    "ats": "greenhouse",
+    "board": "robinhood",
+    "enabled": true,
+    "candidate": true,
+    "fallback": {
+      "provider": "headcount",
+      "company_query": "Robinhood",
+      "aliases": [],
+      "requires_authorization": true,
+      "scope": "finance-related discovery",
+      "cache": "last_successful_snapshot"
+    }
   }
 ]

@@ -24,6 +24,9 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
       - name: Collect sources and rebuild data
+        env:
+          HEADCOUNT_API_KEY: ${{ secrets.HEADCOUNT_API_KEY }}
+          ENABLE_LICENSED_BACKUP: ${{ vars.ENABLE_LICENSED_BACKUP }}
         run: |
           set -o pipefail
           python job_watcher.py run 2>&1 | tee collect.log
@@ -69,6 +72,7 @@ jobs:
             collect.log
             data/status.json
             data/attempt.json
+            data/backup_status.json
           if-no-files-found: ignore
 
   deploy:

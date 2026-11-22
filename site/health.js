@@ -32,14 +32,21 @@ function healthSummary(status,rows,attempt){
  const consistent=rowsOpen===Number(status.open);
  const offline=Object.values(window.jobDataOrigin||{}).some(x=>x==='cache');
  let state='good',label='Collection operational';
- if(broken.length){state='warn';label='Collection degraded'}
+ if(broken.length||deferred){state='warn';label='Collection degraded'}
  if(!working.length||ageHours>36||!consistent){state='bad';label=!consistent?'Data files disagree':ageHours>36?'Data update overdue':'No working sources'}
- if(!working.length&&list.some(s=>s.error_code==='rate_limited')){state='bad';label='Workday rate limited (429)'}
+ if(!working.length&&list.some(s=>s.error_code==='rate_limited')){state='bad';label='ATS rate limited (429)'}
  if(offline&&state!=='bad'){state='warn';label='Offline / cached data'}
  return {state,label,list,configured:configured.length,working:working.length,broken:broken.length,deferred,unconfigured,review,ageHours,consistent,rowsOpen,offline};
 }
 function boardDetails(config){
- if(!config||!config.enabled||config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
+ if(!config||!config.enabled)return {board:'—',scope:'Not configured'};
+ if(['greenhouse','smartrecruiters'].includes(config.ats)&&/^[a-z0-9_-]+$/i.test(config.board||'')){
+  const gh=config.ats==='greenhouse',token=encodeURIComponent(config.board);
+  const board=gh?'https://job-boards.greenhouse.io/'+token:'https://jobs.smartrecruiters.com/'+token;
+  const api=gh?'https://boards-api.greenhouse.io/v1/boards/'+token+'/jobs':'https://api.smartrecruiters.com/v1/companies/'+token+'/postings';
+  return {board:(gh?'Greenhouse':'SmartRecruiters')+' · <a href="'+esc(board)+'" target="_blank" rel="noopener noreferrer">Job board</a><details class="api-detail"><summary>JSON API (GET)</summary><code>'+esc(api)+'</code></details>',scope:'All listed postings'+(config.candidate?' · candidate feed':'')};
+ }
+ if(config.ats!=='workday'||!config.host||!config.site||!config.tenant)return {board:'—',scope:'Not configured'};
  // Construct links exclusively from our version-controlled source registry.
  if(!/^[a-z0-9.-]+\.myworkdayjobs\.com$/i.test(config.host))return {board:'Invalid host',scope:'Review source config'};
  const base='https://'+config.host;
@@ -51,9 +58,28 @@ function badge(label,kind){return '<span class="health-pill health-'+kind+'">'+e
 function statistic(label,value,detail){
  return '<div><div class="muted">'+esc(label)+'</div><strong>'+esc(value)+'</strong><p class="muted">'+esc(detail)+'</p></div>';
 }
+function backupCell(config,report){
+ if(!config?.fallback)return 'Not configured';
+ const b=report?.secondary||{},c=report?.cache||{};
+ const labels={standby:'Standby',authorization_required:'API authorization required',secondary_available:'Secondary results available',no_verified_match:'No verified match',unavailable:'Secondary unavailable',deferred:'Secondary deferred'};
+ const cache=c.date?'Saved '+esc(c.date)+' · '+esc(c.count)+' jobs':'No saved snapshot';
+ return esc(labels[b.state]||'Awaiting backup check')+'<p class="muted">'+cache+'</p>';
+}
+function showBackups(report){
+ const el=$('#backup-list');if(!el)return;
+ if(!report){el.textContent='No backup report available yet.';return;}
+ const fresh=Date.now()-Date.parse(report.run_time)<48*3600000;
+ const list=(report.sources||[]).flatMap(s=>(s.secondary?.jobs||[]).map(j=>({...j,employer:s.name})));
+ let html='<p>Backup report: '+esc(fmtTime(report.run_time,'America/Chicago'))+' · '+(fresh?'Recent report':'Historical report; verify job availability')+'</p>';
+ html+=list.length?'<div class="tablewrap"><table><thead><tr><th>Employer</th><th>Title</th><th>Last verified</th><th>Link</th></tr></thead><tbody>'+list.map(j=>'<tr><td>'+esc(j.employer)+'</td><td>'+esc(j.title)+'</td><td>'+esc(j.last_verified_at)+'</td><td>'+(/^https:\/\//i.test(j.url)?'<a rel="noopener noreferrer" target="_blank" href="'+esc(j.url)+'">View posting</a>':'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p>No authorized secondary listings available.</p>';
+ html+='<p>'+esc(report.attribution||'')+'</p><p><a href="https://headcountlabs.com/license/" target="_blank" rel="noopener noreferrer">Secondary data license</a></p>';
+ el.innerHTML=html;
+}
 async function renderDashboard(){
  try {
-  const [s,rows,sourceConfig,a]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[]),load('attempt.json').catch(()=>null)]);
+  const [s,rows,sourceConfig,a,b]=await Promise.all([load('status.json'),load('history.csv'),load('sources.json').catch(()=>[]),load('attempt.json').catch(()=>null),load('backup_status.json').catch(()=>null)]);
+  const backupMap=new Map((b?.sources||[]).map(x=>[x.name,x]));
+  showBackups(b);
   const attempt=a&&Date.parse(a.run_time)>=Date.parse(s.run_time)?a:null;
   const h=healthSummary(s,rows,attempt),last=(s.run_time||'').slice(0,10);
   $('#run').textContent='Last saved snapshot: '+fmtTime(s.run_time,'America/Chicago')+' ('+fmtTime(s.run_time,'UTC')+')';
@@ -71,7 +97,8 @@ async function renderDashboard(){
     '<div><div class="muted">History consistency</div>'+badge(h.consistent?'Counts agree':'Counts differ',h.consistent?'good':'bad')+'<p class="muted">'+h.rowsOpen+' open history rows vs '+esc(s.open)+' in status.json.</p></div>'+
     '</div><p class="muted">Operational health measures reported collection success and freshness. Coverage and source completeness are shown separately. The dashboard does not certify that all tracked boards were fully captured.</p>';
   const metadata=new Map(sourceConfig.map(x=>[x.name,x]));
-  $('#sources').innerHTML=h.list.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="6">No status report available</td></tr>';
+  const displayed=h.list.concat(sourceConfig.filter(c=>!h.list.some(x=>x.name===c.name)).map(c=>({name:c.name,ok:false,count:0,error:'Awaiting first scheduled collection',error_code:'deferred'})));
+  $('#sources').innerHTML=displayed.map(x=>{const state=sourceHealth(x),source=boardDetails(metadata.get(x.name));return '<tr><td>'+companyMark(x.name)+'</td><td>'+source.board+'</td><td>'+source.scope+'</td><td>'+backupCell(metadata.get(x.name),backupMap.get(x.name))+'</td><td>'+badge(state.label,state.kind)+'</td><td>'+esc(x.count)+'</td><td>'+esc(state.detail)+'</td></tr>'}).join('')||'<tr><td colspan="7">No status report available</td></tr>';
   $('#new').innerHTML=rows.filter(r=>r.first_seen===last&&r.first_run==='false').map(r=>row(r)).join('')||'<tr><td colspan="5">No new postings detected. First-run positions are excluded.</td></tr>';
   $('#removed').innerHTML=rows.filter(r=>r.removed_date===last).map(r=>row(r)).join('')||'<tr><td colspan="5">No removed postings detected.</td></tr>';
  }catch(e){
