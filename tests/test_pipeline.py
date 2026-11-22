@@ -141,3 +141,43 @@ def test_public_ats_normalization():
     s={'name':'S','employer':'S','ats':'smartrecruiters','board':'S'}
     raw={'pages':[{'content':[{'id':'abc','name':'Cost Analyst','releasedDate':'2026-11-19T12:00:00Z','location':{'city':'Dallas'}}]}]}
     assert jw.normalize(s,raw)[0]['posted_date']=='2026-11-19'
+
+
+def test_every_employer_has_fallback_and_isolation_config():
+    configs=jw.sources()
+    assert len(configs)>=20
+    assert len({c['name'] for c in configs})==len(configs)
+    assert all(c.get('fallback',{}).get('provider')=='headcount' for c in configs)
+    assert all(c['fallback'].get('cache')=='last_successful_snapshot' for c in configs)
+    assert all(c['fallback'].get('requires_authorization') is True for c in configs)
+    assert {'workday','greenhouse','smartrecruiters'}<=set(c['ats'] for c in configs)
+
+def test_smartrecruiters_incomplete_page_refused():
+    class Response:
+        def raise_for_status(self): pass
+        def json(self):return {'content':[],'totalFound':1,'offset':0}
+    class Session:
+        def get(self,*args,**kwargs):return Response()
+    import pytest
+    with pytest.raises(ValueError,match='Incomplete'):
+        jw.get_smartrecruiters(Session(),{'board':'Example'})
+
+def test_backups_never_count_as_fresh_snapshots(tmp_path):
+    import backup_sources as backup
+    root=tmp_path/'data'
+    root.mkdir()
+    configs=[{'name':'Example','employer':'Example','ticker':'EX',
+              'ats':'workday','fallback':{'company_query':'Example'}}]
+    statuses=[{'name':'Example','ok':False,'count':0}]
+    import os
+    key=os.environ.pop('HEADCOUNT_API_KEY',None)
+    enabled=os.environ.pop('ENABLE_LICENSED_BACKUP',None)
+    try:
+        r=backup.collect_backups(root,configs,statuses,'2026-11-22',jw.slug,
+                                 lambda provider: (_ for _ in ()).throw(AssertionError('network called')))
+        assert r['sources'][0]['secondary']['state']=='authorization_required'
+        assert r['sources'][0]['cache']['state']=='no_snapshot'
+        assert not list(root.glob('raw/*/*.json.gz'))
+    finally:
+        if key is not None:os.environ['HEADCOUNT_API_KEY']=key
+        if enabled is not None:os.environ['ENABLE_LICENSED_BACKUP']=enabled
