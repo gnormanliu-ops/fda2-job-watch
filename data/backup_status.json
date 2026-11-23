@@ -1,0 +1,355 @@
+{
+  "run_time": "2026-11-23T22:08:00.622406+00:00",
+  "scope": "Supplementary only; excluded from official statistics",
+  "attribution": "Job data: Headcount Labs (https://headcountlabs.com), ODbL 1.0. Job descriptions belong to their employers. Location data \u00a9 OpenStreetMap contributors and Overture Maps.",
+  "license": "https://headcountlabs.com/license/",
+  "sources": [
+    {
+      "name": "Boeing",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-20",
+        "count": 40,
+        "path": "data/raw/2026-11-20/boeing.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "GE Aerospace",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 589,
+        "path": "data/raw/2026-11-15/ge-aerospace.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "GE Vernova",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 2163,
+        "path": "data/raw/2026-11-15/ge-vernova.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "General Motors",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/general-motors.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Applied Materials",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/applied-materials.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Micron Technology",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 2898,
+        "path": "data/raw/2026-11-15/micron-technology.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Intel",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/intel.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Rockwell Automation",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/rockwell-automation.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "3M",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/3m.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Pfizer",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/pfizer.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Eli Lilly",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/eli-lilly.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Bristol Myers Squibb",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/bristol-myers-squibb.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Gilead Sciences",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/gilead-sciences.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Caterpillar",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/caterpillar.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Walmart",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-16",
+        "count": 40,
+        "path": "data/raw/2026-11-16/walmart.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "UPS",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/ups.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Target",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/target.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "CVS Health",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 114,
+        "path": "data/raw/2026-11-15/cvs-health.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Capital One",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 2061,
+        "path": "data/raw/2026-11-15/capital-one.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "Mastercard",
+      "primary_ok": false,
+      "cache": {
+        "state": "historical_only",
+        "date": "2026-11-15",
+        "count": 40,
+        "path": "data/raw/2026-11-15/mastercard.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "AECOM",
+      "primary_ok": true,
+      "cache": {
+        "state": "saved_snapshot",
+        "date": "2026-11-23",
+        "count": 5521,
+        "path": "data/raw/2026-11-23/aecom.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "standby"
+      }
+    },
+    {
+      "name": "Western Digital",
+      "primary_ok": true,
+      "cache": {
+        "state": "saved_snapshot",
+        "date": "2026-11-23",
+        "count": 324,
+        "path": "data/raw/2026-11-23/western-digital.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "standby"
+      }
+    },
+    {
+      "name": "Sandisk",
+      "primary_ok": false,
+      "cache": {
+        "state": "no_snapshot"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "authorization_required"
+      }
+    },
+    {
+      "name": "DoorDash",
+      "primary_ok": true,
+      "cache": {
+        "state": "saved_snapshot",
+        "date": "2026-11-23",
+        "count": 408,
+        "path": "data/raw/2026-11-23/doordash.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "standby"
+      }
+    },
+    {
+      "name": "Robinhood",
+      "primary_ok": true,
+      "cache": {
+        "state": "saved_snapshot",
+        "date": "2026-11-23",
+        "count": 160,
+        "path": "data/raw/2026-11-23/robinhood.json.gz"
+      },
+      "secondary": {
+        "provider": "Headcount Labs",
+        "state": "standby"
+      }
+    }
+  ]
+}
