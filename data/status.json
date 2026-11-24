@@ -1,37 +1,37 @@
 {
-  "run_time": "2026-11-23T22:05:28.430166Z",
+  "run_time": "2026-11-24T20:41:57.696274Z",
   "first_run_date": "2026-11-04",
-  "days_with_success": 17,
-  "open": 14838,
-  "new_today": 0,
-  "removed_today": 0,
+  "days_with_success": 18,
+  "open": 14847,
+  "new_today": 157,
+  "removed_today": 148,
   "sources": [
     {
       "name": "DoorDash",
       "ats": "greenhouse",
       "ok": true,
-      "count": 408,
+      "count": 399,
       "attempted": true
     },
     {
       "name": "Robinhood",
       "ats": "greenhouse",
       "ok": true,
-      "count": 160,
+      "count": 157,
       "attempted": true
     },
     {
       "name": "AECOM",
       "ats": "smartrecruiters",
       "ok": true,
-      "count": 5521,
+      "count": 5534,
       "attempted": true
     },
     {
       "name": "Western Digital",
       "ats": "smartrecruiters",
       "ok": true,
-      "count": 324,
+      "count": 332,
       "attempted": true
     },
     {
