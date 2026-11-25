@@ -1,5 +1,5 @@
 {
-  "run_time": "2026-11-24T20:44:29.340650+00:00",
+  "run_time": "2026-11-25T20:00:52.572663+00:00",
   "scope": "Supplementary only; excluded from official statistics",
   "attribution": "Job data: Headcount Labs (https://headcountlabs.com), ODbL 1.0. Job descriptions belong to their employers. Location data \u00a9 OpenStreetMap contributors and Overture Maps.",
   "license": "https://headcountlabs.com/license/",
@@ -289,9 +289,9 @@
       "primary_ok": true,
       "cache": {
         "state": "saved_snapshot",
-        "date": "2026-11-24",
-        "count": 5534,
-        "path": "data/raw/2026-11-24/aecom.json.gz"
+        "date": "2026-11-25",
+        "count": 5562,
+        "path": "data/raw/2026-11-25/aecom.json.gz"
       },
       "secondary": {
         "provider": "Headcount Labs",
@@ -303,9 +303,9 @@
       "primary_ok": true,
       "cache": {
         "state": "saved_snapshot",
-        "date": "2026-11-24",
-        "count": 332,
-        "path": "data/raw/2026-11-24/western-digital.json.gz"
+        "date": "2026-11-25",
+        "count": 340,
+        "path": "data/raw/2026-11-25/western-digital.json.gz"
       },
       "secondary": {
         "provider": "Headcount Labs",
@@ -328,9 +328,9 @@
       "primary_ok": true,
       "cache": {
         "state": "saved_snapshot",
-        "date": "2026-11-24",
-        "count": 399,
-        "path": "data/raw/2026-11-24/doordash.json.gz"
+        "date": "2026-11-25",
+        "count": 403,
+        "path": "data/raw/2026-11-25/doordash.json.gz"
       },
       "secondary": {
         "provider": "Headcount Labs",
@@ -342,9 +342,9 @@
       "primary_ok": true,
       "cache": {
         "state": "saved_snapshot",
-        "date": "2026-11-24",
-        "count": 157,
-        "path": "data/raw/2026-11-24/robinhood.json.gz"
+        "date": "2026-11-25",
+        "count": 161,
+        "path": "data/raw/2026-11-25/robinhood.json.gz"
       },
       "secondary": {
         "provider": "Headcount Labs",
