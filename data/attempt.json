@@ -1,5 +1,5 @@
 {
-  "run_time": "2026-11-26T19:41:59.700440Z",
+  "run_time": "2026-11-27T19:30:25.327499Z",
   "sources": [
     {
       "name": "DoorDash",
@@ -12,21 +12,21 @@
       "name": "Robinhood",
       "ats": "greenhouse",
       "ok": true,
-      "count": 162,
+      "count": 161,
       "attempted": true
     },
     {
       "name": "AECOM",
       "ats": "smartrecruiters",
       "ok": true,
-      "count": 5607,
+      "count": 5597,
       "attempted": true
     },
     {
       "name": "Western Digital",
       "ats": "smartrecruiters",
       "ok": true,
-      "count": 337,
+      "count": 333,
       "attempted": true
     },
     {
@@ -40,20 +40,18 @@
     {
       "name": "Boeing",
       "ats": "workday",
-      "ok": false,
-      "count": 0,
-      "attempted": true,
-      "error": "HTTP 429: workday rate limited; remaining requests for this provider deferred to a later scheduled collection (Retry-After 90s)",
-      "error_code": "rate_limited"
+      "ok": true,
+      "count": 40,
+      "attempted": true
     },
     {
       "name": "GE Aerospace",
       "ats": "workday",
       "ok": false,
       "count": 0,
-      "attempted": false,
-      "error_code": "deferred",
-      "error": "Deferred after workday rate limit; no request sent"
+      "attempted": true,
+      "error": "HTTP 429: workday rate limited; remaining requests for this provider deferred to a later scheduled collection (Retry-After 90s)",
+      "error_code": "rate_limited"
     },
     {
       "name": "GE Vernova",
