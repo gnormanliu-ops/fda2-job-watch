@@ -138,44 +138,78 @@ def raw_jobs(s,raw):
     raise ValueError('Unknown ATS: '+provider)
 
 
-def collect(day,session=None):
-    p=DATA/'raw'/day;p.mkdir(parents=True,exist_ok=True)
-    result=[];clients={}
-    adapters={'workday':get_workday,'greenhouse':get_greenhouse,'smartrecruiters':get_smartrecruiters}
-    # New public GET APIs are collected first; Workday remains a separate circuit.
-    priority={'greenhouse':0,'smartrecruiters':1,'workday':2}
-    for s in sorted(sources(),key=lambda x:priority.get(x.get('ats'),3)):
-        provider=s.get('ats','workday')
-        dest=p/(slug(s['name'])+'.json.gz')
-        r={'name':s['name'],'ats':provider,'ok':False,'count':0,'attempted':False}
-        if not s.get('enabled'):
-            r['error']='Unverified source';result.append(r);continue
+def ordered_sources(day, configs):
+    """Rotate the first board consulted; avoid repeatedly probing one blocked host."""
+    result = []
+    for provider in ('greenhouse', 'smartrecruiters', 'workday'):
+        group = [s for s in configs if s.get('ats', 'workday') == provider]
+        if not group:
+            continue
+        offset = int(day[-2:]) % len(group)
+        result.extend(group[offset:] + group[:offset])
+    return result
+
+
+def collect(day, session=None):
+    folder = DATA / 'raw' / day
+    folder.mkdir(parents=True, exist_ok=True)
+    results = []
+    clients = {}
+    blocked_counts = {}
+    adapters = {'workday': get_workday, 'greenhouse': get_greenhouse,
+                'smartrecruiters': get_smartrecruiters}
+    # Two 429 encounters is sufficient to stop probing that provider for today.
+    # Other providers remain independent; no proxy/IP rotation or bypass attempts.
+    for source in ordered_sources(day, sources()) if session is None else sources():
+        provider = source.get('ats', 'workday')
+        dest = folder / (slug(source['name']) + '.json.gz')
+        row = {'name': source['name'], 'ats': provider,
+               'ok': False, 'count': 0, 'attempted': False}
+        if not source.get('enabled'):
+            row['error_code'] = 'not_configured'
+            row['error'] = 'Not enabled'
+            results.append(row)
+            continue
         if provider not in adapters:
-            r['error']='Adapter unavailable';result.append(r);continue
-        if provider not in clients:
-            clients[provider]=session if session is not None and provider=='workday' else make_session(provider)
-        client=clients[provider]
-        if getattr(client,'rate_limit_stop',None):
-            r.update(error_code='deferred',error=f'Deferred after {provider} rate limit; no request sent')
-            result.append(r);continue
+            row['error_code'] = 'not_configured'
+            row['error'] = 'Adapter unavailable'
+            results.append(row)
+            continue
+        if blocked_counts.get(provider, 0) >= 2:
+            row.update(error_code='deferred', error=f'{provider} request budget exhausted after 429; not attempted')
+            results.append(row)
+            continue
+        key = (provider, source.get('host') or source.get('board') or source['name'])
+        if key not in clients:
+            clients[key] = session if session is not None and provider == 'workday' else make_session(provider)
+        client = clients[key]
+        if getattr(client, 'rate_limit_stop', None):
+            row.update(error_code='deferred', error=f'{provider} rate limited in this session; not attempted')
+            results.append(row)
+            continue
         try:
-            r['attempted']=True
-            raw=adapters[provider](client,s)
-            count=len(raw_jobs(s,raw))
-            if s.get('candidate') and count==0 and not any((DATA/'raw').glob('*/'+dest.name)):
-                raise ValueError('Unvalidated candidate returned zero jobs; no initial snapshot saved')
-            temp=dest.with_suffix('.tmp')
+            row['attempted'] = True
+            raw = adapters[provider](client, source)
+            count = len(raw_jobs(source, raw))
+            if source.get('candidate') and count == 0 and not any(
+                    (DATA / 'raw').glob('*/' + dest.name)):
+                raise ValueError('Candidate returned zero jobs; no initial snapshot saved')
+            temp = dest.with_suffix('.tmp')
             try:
-                with gzip.open(temp,'wt',encoding='utf8') as fh:json.dump(raw,fh)
+                with gzip.open(temp, 'wt', encoding='utf8') as handle:
+                    json.dump(raw, handle)
                 temp.replace(dest)
             finally:
                 temp.unlink(missing_ok=True)
-            r.update(ok=True,count=count)
-        except Exception as e:
-            r['error']=str(e)[:300]
-            if isinstance(e,RateLimited):r['error_code']='rate_limited'
-        result.append(r)
-    return result
+            row.update(ok=True, count=count)
+        except Exception as exc:
+            row['error'] = str(exc)[:300]
+            if isinstance(exc, RateLimited):
+                row['error_code'] = 'rate_limited'
+                blocked_counts[provider] = blocked_counts.get(provider, 0) + 1
+            # No failed attempt is written as a fresh raw snapshot.
+        results.append(row)
+    return results
 
 
 def normalize(s,raw):
