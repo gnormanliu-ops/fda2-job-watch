@@ -181,3 +181,52 @@ def test_backups_never_count_as_fresh_snapshots(tmp_path):
     finally:
         if key is not None:os.environ['HEADCOUNT_API_KEY']=key
         if enabled is not None:os.environ['ENABLE_LICENSED_BACKUP']=enabled
+
+
+def test_rotation_and_per_host_rate_limit_budget(tmp_path, monkeypatch):
+    monkeypatch.setattr(jw, 'DATA', tmp_path / 'data')
+    cfg = [
+        {'name': 'W'+str(i), 'employer': 'W'+str(i), 'enabled': True,
+         'ats': 'workday', 'host': 'host'+str(i)+'.myworkdayjobs.com'}
+        for i in range(5)
+    ]
+    monkeypatch.setattr(jw,'sources',lambda:cfg)
+    class Client:
+        rate_limit_stop = None
+    sessions=[]
+    def session(provider='workday'):
+        client=Client()
+        sessions.append(client)
+        return client
+    monkeypatch.setattr(jw,'make_session',session)
+    calls=[]
+    def fail(client, source):
+        calls.append(source['name'])
+        client.rate_limit_stop='429'
+        raise jw.RateLimited('HTTP 429')
+    monkeypatch.setattr(jw,'get_workday',fail)
+    report=jw.collect('2026-11-27')
+    assert len(calls)==2  # no flood after global rate limiting
+    assert [s['error_code'] for s in report].count('rate_limited')==2
+    assert [s['error_code'] for s in report].count('deferred')==3
+    assert len(sessions)==2
+    assert calls[0]!='W0'   # avoids always starting with Boeing
+
+
+def test_workday_failure_does_not_block_public_get_providers(tmp_path,monkeypatch):
+    monkeypatch.setattr(jw,'DATA',tmp_path/'data')
+    monkeypatch.setattr(jw,'sources',lambda:[
+       {'name':'W','employer':'W','enabled':True,'ats':'workday','host':'workday.example'},
+       {'name':'G','employer':'G','enabled':True,'ats':'greenhouse','board':'g'}])
+    class Client:
+        rate_limit_stop=None
+    monkeypatch.setattr(jw,'make_session',lambda provider='workday':Client())
+    def blocked(client,source):
+        client.rate_limit_stop='429'
+        raise jw.RateLimited('HTTP 429')
+    monkeypatch.setattr(jw,'get_workday',blocked)
+    monkeypatch.setattr(jw,'get_greenhouse',lambda c,s:{
+         'jobs':[{'id':101,'title':'Financial Analyst','absolute_url':'https://example.org/job'}]})
+    report={r['name']:r for r in jw.collect('2026-11-27')}
+    assert report['G']['ok'] is True
+    assert report['W']['error_code']=='rate_limited'
